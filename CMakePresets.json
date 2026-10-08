@@ -1,0 +1,25 @@
+{
+  "version": 6,
+  "cmakeMinimumRequired": {"major": 3, "minor": 25, "patch": 0},
+  "configurePresets": [
+    {"name": "debug", "generator": "Ninja", "binaryDir": "${sourceDir}/out/debug", "cacheVariables": {"CMAKE_BUILD_TYPE": "Debug", "CMAKE_EXPORT_COMPILE_COMMANDS": "ON"}},
+    {"name": "release", "inherits": "debug", "binaryDir": "${sourceDir}/out/release", "cacheVariables": {"CMAKE_BUILD_TYPE": "Release"}},
+    {"name": "shared", "inherits": "release", "binaryDir": "${sourceDir}/out/shared", "cacheVariables": {"BUILD_SHARED_LIBS": "ON"}},
+    {"name": "asan", "inherits": "debug", "binaryDir": "${sourceDir}/out/asan", "cacheVariables": {"TANSR_ENABLE_ASAN": "ON"}},
+    {"name": "tsan", "inherits": "debug", "binaryDir": "${sourceDir}/out/tsan", "cacheVariables": {"TANSR_ENABLE_TSAN": "ON"}}
+  ],
+  "buildPresets": [
+    {"name": "debug", "configurePreset": "debug"},
+    {"name": "release", "configurePreset": "release"},
+    {"name": "shared", "configurePreset": "shared"},
+    {"name": "asan", "configurePreset": "asan"},
+    {"name": "tsan", "configurePreset": "tsan"}
+  ],
+  "testPresets": [
+    {"name": "debug", "configurePreset": "debug", "output": {"outputOnFailure": true}, "execution": {"noTestsAction": "error"}},
+    {"name": "release", "configurePreset": "release", "output": {"outputOnFailure": true}, "execution": {"noTestsAction": "error"}},
+    {"name": "shared", "configurePreset": "shared", "output": {"outputOnFailure": true}, "execution": {"noTestsAction": "error"}},
+    {"name": "asan", "configurePreset": "asan", "output": {"outputOnFailure": true}, "execution": {"noTestsAction": "error"}},
+    {"name": "tsan", "configurePreset": "tsan", "output": {"outputOnFailure": true}, "execution": {"noTestsAction": "error"}}
+  ]
+}

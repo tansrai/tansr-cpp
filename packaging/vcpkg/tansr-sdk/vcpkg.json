@@ -1,0 +1,12 @@
+{
+  "name": "tansr-sdk",
+  "version-semver": "0.1.0",
+  "description": "Native C++17 client of the Tansr unified API",
+  "homepage": "https://github.com/tansrai/tansr-cpp",
+  "license": "MIT",
+  "supports": "(windows & x64) | (linux & x64) | (osx & arm64)",
+  "dependencies": [
+    { "name": "vcpkg-cmake", "host": true },
+    { "name": "vcpkg-cmake-config", "host": true }
+  ]
+}

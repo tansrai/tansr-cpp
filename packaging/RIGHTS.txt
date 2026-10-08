@@ -1,0 +1,22 @@
+Tansr native C++ SDK and demos
+
+Copyright (c) 2026 Tansr (tansr.com)
+
+The Tansr C++ SDK, its three demos, public documentation and approved public
+contract subset are distributed under the MIT License in the root LICENSE.
+Preserve that copyright and license with copies or substantial portions.
+
+This authorization covers the approved public source snapshot. Serve/kernel
+source, internal reference materials, private Git history, credentials and
+build evidence are outside that snapshot and are not relicensed by this notice.
+The public contract distribution is explicitly declared and byte-checked; an
+internal 39-file checkout must not be published as the public source archive.
+
+Runtime dependencies retain their own licenses: curl (curl license), c-ares
+(MIT, curl DNS backend), and OpenSSL 3.5 (Apache-2.0). Include the original
+notices when redistributing their code or binaries. See NOTICE.md and
+licenses/ for the texts, and dependencies.json for exact source versions and
+hashes. Binary SDK artifacts bundle matching development dependencies in
+dependencies/; demo artifacts preserve notices for linked dependencies.
+Source recipes use externally prepared dependencies. None of these forms
+relicenses third-party code.

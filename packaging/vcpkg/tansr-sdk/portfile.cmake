@@ -1,0 +1,73 @@
+# 同版发行配方固定源码归档，不读取开发工作树，也不隐式下载 main。
+file(READ "${CMAKE_CURRENT_LIST_DIR}/source.json" TANSR_SOURCE_RECORD)
+string(JSON TANSR_SOURCE_VERSION GET "${TANSR_SOURCE_RECORD}" version)
+string(JSON TANSR_SOURCE_URL GET "${TANSR_SOURCE_RECORD}" url)
+string(JSON TANSR_SOURCE_SHA512 GET "${TANSR_SOURCE_RECORD}" sha512)
+string(LENGTH "${TANSR_SOURCE_SHA512}" TANSR_SOURCE_HASH_LENGTH)
+set(TANSR_SOURCE_URL_PREFIX "https://github.com/tansrai/tansr-cpp/releases/download/v${VERSION}/")
+string(FIND "${TANSR_SOURCE_URL}" "${TANSR_SOURCE_URL_PREFIX}" TANSR_SOURCE_URL_POSITION)
+if(NOT TANSR_SOURCE_VERSION STREQUAL VERSION OR NOT TANSR_SOURCE_URL_POSITION EQUAL 0 OR
+   TANSR_SOURCE_URL STREQUAL TANSR_SOURCE_URL_PREFIX OR NOT TANSR_SOURCE_HASH_LENGTH EQUAL 128 OR
+   TANSR_SOURCE_SHA512 MATCHES "[^0-9a-f]")
+  message(FATAL_ERROR "This version has no verified source release URL/SHA512 in source.json; use the completed overlay from the matching GitHub Release")
+endif()
+if(NOT DEFINED ENV{TANSR_CPP_DEPENDENCY_PREFIX})
+  message(FATAL_ERROR "Set TANSR_CPP_DEPENDENCY_PREFIX to the prepared dependency directory")
+endif()
+file(REAL_PATH "$ENV{TANSR_CPP_DEPENDENCY_PREFIX}" DEPENDENCY_PREFIX)
+if(NOT EXISTS "${DEPENDENCY_PREFIX}/include/curl/curl.h" OR NOT EXISTS "${DEPENDENCY_PREFIX}/include/openssl/evp.h")
+  message(FATAL_ERROR "Dependency prefix must contain prepared curl and OpenSSL development files")
+endif()
+if(DEFINED ENV{TANSR_CPP_DEPENDENCY_PREFIX_DEBUG})
+  file(REAL_PATH "$ENV{TANSR_CPP_DEPENDENCY_PREFIX_DEBUG}" DEPENDENCY_PREFIX_DEBUG)
+elseif(NOT VCPKG_BUILD_TYPE STREQUAL "release")
+  message(FATAL_ERROR "Set TANSR_CPP_DEPENDENCY_PREFIX_DEBUG for the Debug build; do not link Release CRT libraries into Debug")
+endif()
+if(DEFINED DEPENDENCY_PREFIX_DEBUG AND
+   (NOT EXISTS "${DEPENDENCY_PREFIX_DEBUG}/include/curl/curl.h" OR NOT EXISTS "${DEPENDENCY_PREFIX_DEBUG}/include/openssl/evp.h"))
+  message(FATAL_ERROR "Debug dependency prefix must contain its matching development files")
+endif()
+vcpkg_download_distfile(TANSR_SOURCE_ARCHIVE
+  URLS "${TANSR_SOURCE_URL}"
+  FILENAME "tansr-cpp-${VERSION}.tar.gz"
+  SHA512 "${TANSR_SOURCE_SHA512}")
+vcpkg_extract_source_archive(SOURCE_PATH ARCHIVE "${TANSR_SOURCE_ARCHIVE}")
+if(NOT EXISTS "${SOURCE_PATH}/include/tansr/api.hpp" OR NOT EXISTS "${SOURCE_PATH}/CMakeLists.txt")
+  message(FATAL_ERROR "Source archive does not contain the SDK root")
+endif()
+vcpkg_cmake_configure(SOURCE_PATH "${SOURCE_PATH}" OPTIONS
+  -DTANSR_BUILD_TESTS=OFF -DTANSR_BUILD_DEMOS=OFF -DTANSR_BUILD_INTEGRATION=OFF
+  -DTANSR_WARNINGS_AS_ERRORS=ON
+  OPTIONS_RELEASE "-DCMAKE_PREFIX_PATH=${DEPENDENCY_PREFIX}" "-DOPENSSL_ROOT_DIR=${DEPENDENCY_PREFIX}"
+  OPTIONS_DEBUG "-DCMAKE_PREFIX_PATH=${DEPENDENCY_PREFIX_DEBUG}" "-DOPENSSL_ROOT_DIR=${DEPENDENCY_PREFIX_DEBUG}")
+vcpkg_cmake_install()
+vcpkg_cmake_config_fixup(PACKAGE_NAME TansrSDK CONFIG_PATH lib/cmake/TansrSDK)
+vcpkg_copy_pdbs()
+# 只删除本包内确认重复的配置无关目录，不放宽 vcpkg 的 debug/share 检查。
+file(REAL_PATH "${CURRENT_PACKAGES_DIR}" TANSR_PACKAGE_ROOT)
+foreach(common IN ITEMS include share)
+  if(EXISTS "${CURRENT_PACKAGES_DIR}/debug/${common}")
+    file(REAL_PATH "${CURRENT_PACKAGES_DIR}/debug/${common}" TANSR_DEBUG_COMMON)
+    cmake_path(IS_PREFIX TANSR_PACKAGE_ROOT "${TANSR_DEBUG_COMMON}" NORMALIZE TANSR_WITHIN_PACKAGE)
+    if(NOT TANSR_WITHIN_PACKAGE OR TANSR_DEBUG_COMMON STREQUAL TANSR_PACKAGE_ROOT)
+      message(FATAL_ERROR "Refusing to remove a directory outside this package")
+    endif()
+    file(GLOB_RECURSE TANSR_DEBUG_FILES LIST_DIRECTORIES false "${TANSR_DEBUG_COMMON}/*")
+    foreach(duplicate IN LISTS TANSR_DEBUG_FILES)
+      file(RELATIVE_PATH relative "${TANSR_DEBUG_COMMON}" "${duplicate}")
+      set(retained "${CURRENT_PACKAGES_DIR}/${common}/${relative}")
+      if(NOT EXISTS "${retained}")
+        message(FATAL_ERROR "Debug package file has no release counterpart: ${relative}")
+      endif()
+      file(SHA256 "${duplicate}" debug_sha)
+      file(SHA256 "${retained}" release_sha)
+      if(NOT debug_sha STREQUAL release_sha)
+        message(FATAL_ERROR "Configuration-independent package file differs: ${relative}")
+      endif()
+    endforeach()
+    file(REMOVE_RECURSE "${TANSR_DEBUG_COMMON}")
+  endif()
+endforeach()
+file(INSTALL "${SOURCE_PATH}/LICENSE" DESTINATION "${CURRENT_PACKAGES_DIR}/share/${PORT}" RENAME copyright)
+file(INSTALL "${SOURCE_PATH}/packaging/RIGHTS.txt" "${SOURCE_PATH}/packaging/NOTICE.md" "${SOURCE_PATH}/packaging/licenses"
+  DESTINATION "${CURRENT_PACKAGES_DIR}/share/${PORT}")

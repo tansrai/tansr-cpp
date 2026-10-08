@@ -1,0 +1,7 @@
+{
+  "format": "tansr-cpp-contract-distribution-v1",
+  "scope": "public",
+  "sourceLockSha256": "1c761f0dbd1c1cc45229964739b48c8044fed37480cf98151fdfe2bf8f4746c0",
+  "sourceLockFileCount": 39,
+  "contractFileCount": 20
+}

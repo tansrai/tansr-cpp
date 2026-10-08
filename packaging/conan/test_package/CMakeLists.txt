@@ -1,0 +1,6 @@
+cmake_minimum_required(VERSION 3.25)
+project(TansrConanConsumer LANGUAGES CXX)
+find_package(TansrSDK 0.1 CONFIG REQUIRED)
+add_executable(tansr-conan-consumer main.cpp)
+target_link_libraries(tansr-conan-consumer PRIVATE tansr::sdk)
+target_compile_features(tansr-conan-consumer PRIVATE cxx_std_17)

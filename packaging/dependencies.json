@@ -1,0 +1,11 @@
+{
+  "format": "tansr-cpp-tested-dependencies-v1",
+  "scope": "pinned dependency sources for native C++ SDK and demo builds; dependency licenses remain separate",
+  "dependencies": [
+    { "name": "curl", "version": "8.22.0", "sha256": "f7ef3ae8a22e521f289803fe93543eb64c329b58aa73a9e224dfd915a2a5f4f7", "source": "https://curl.se/download/curl-8.22.0.tar.xz", "license": "curl" },
+    { "name": "c-ares", "version": "1.34.8", "sha256": "ddf8be8b179ef6ff656e7413da93cf0f3038c627aca29ce9aae30f66e5b32bc1", "source": "https://codeload.github.com/c-ares/c-ares/tar.gz/refs/tags/v1.34.8", "license": "MIT", "role": "curl cancellable DNS backend" },
+    { "name": "OpenSSL", "version": "3.5.9", "sha256": "603f5602e2eef00d77fbd429d34dcd5822bb301757a1bc9cdb24c670f1eb859a", "source": "https://github.com/openssl/openssl/releases/download/openssl-3.5.9/openssl-3.5.9.tar.gz", "license": "Apache-2.0" }
+  ],
+  "json": "owned SDK parser; no nlohmann runtime dependency",
+  "fetchPolicy": "default CMake configuration never downloads dependencies; package manager acquisition is explicit"
+}

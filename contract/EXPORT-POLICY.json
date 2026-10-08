@@ -1,0 +1,29 @@
+{
+  "format": "tansr-cpp-contract-export-policy-v1",
+  "sourceCommit": "83c64b2c519623a79994c942a5132300eb8174d4",
+  "sourceLockSha256": "1c761f0dbd1c1cc45229964739b48c8044fed37480cf98151fdfe2bf8f4746c0",
+  "status": "approved",
+  "files": [
+    "api-error-map.json",
+    "api-manifest.json",
+    "archive-sync-v1.schema.json",
+    "canonical-cross-vectors.json",
+    "sdk2-archive-recovery-v1.golden.json",
+    "sdk2-archive-recovery-v1.schema.json",
+    "sdk2-cache-core-v1.schema.json",
+    "sdk2-cache-v1.schema.json",
+    "sdk2-ext-v1.schema.json",
+    "sdk2-wire-v1.json",
+    "terminal-observation-v1.golden.json",
+    "terminal-observation-v1.schema.json",
+    "terminal-profile-v1.golden.json",
+    "terminal-profile-v1.schema.json",
+    "terminal-services-v1.golden.json",
+    "terminal-services-v1.schema.json",
+    "terminal-shell-sandbox-v1.golden.json",
+    "terminal-shell-sandbox-v1.schema.json",
+    "unified-v1.golden.json",
+    "unified-v1.schema.json"
+  ],
+  "authorization": "2026-10-08：用户明确授权 C++ SDK 源码与 Demo 按 MIT 开源到 tansrai，并准备 SDK/Demo 产物。此策略仅批准列名的20项合同和来源元数据；不包含reference私有参考、私有Git历史、内部台账或真实Serve打包夹具。本轮不自行正式发版。"
+}

@@ -1,0 +1,91 @@
+name: Native basic CI
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+    inputs:
+      serve_fixture:
+        description: Optional existing runner-local private fixture path; never a download URL
+        type: string
+        default: ''
+      serve_provenance:
+        description: Matching existing runner-local provenance path
+        type: string
+        default: ''
+      serve_node:
+        description: Absolute Node executable path for the private fixture
+        type: string
+        default: ''
+
+permissions:
+  contents: read
+
+jobs:
+  native:
+    # 手动运行也只接受已收编主线，不能绕过开发分支纪律。
+    if: github.ref == 'refs/heads/main'
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [windows-2022, ubuntu-24.04, macos-15]
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          persist-credentials: false
+      - name: Initialize existing MSVC x64 tools
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: |
+          $vswhere = "${env:ProgramFiles(x86)}\Microsoft Visual Studio\Installer\vswhere.exe"
+          $installation = & $vswhere -latest -products * -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -property installationPath
+          if (!$installation) { throw 'MSVC x64 tools missing' }
+          $command = '"' + $installation + '\Common7\Tools\VsDevCmd.bat" -arch=x64 -host_arch=x64 >nul && set'
+          cmd /d /s /c $command | ForEach-Object {
+            if ($_ -match '^([^=]+)=(.*)$') { "$($Matches[1])=$($Matches[2])" >> $env:GITHUB_ENV }
+          }
+          if ($LASTEXITCODE -ne 0) { throw 'MSVC initialization failed' }
+      - name: Explicit locked dependency preparation
+        shell: pwsh
+        run: |
+          python tools/prepare_dependencies.py --cache out/downloads --output out/dependencies --download --jobs 2
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      - name: Compile, CTest, install and independent consumer
+        shell: pwsh
+        env:
+          SERVE_FIXTURE: ${{ inputs.serve_fixture }}
+          SERVE_PROVENANCE: ${{ inputs.serve_provenance }}
+          SERVE_NODE: ${{ inputs.serve_node }}
+        run: |
+          $fixtureArgs = @()
+          if ($env:SERVE_FIXTURE -or $env:SERVE_PROVENANCE -or $env:SERVE_NODE) {
+            $fixtureArgs = @('--fixture', $env:SERVE_FIXTURE, '--provenance', $env:SERVE_PROVENANCE, '--node', $env:SERVE_NODE)
+          }
+          python tools/ci.py --prefix out/dependencies/prefix --output out/ci --contract-mode public --jobs 2 @fixtureArgs
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      - name: Report acceptance scope
+        if: always()
+        shell: pwsh
+        run: |
+          '### Native basic CI' >> $env:GITHUB_STEP_SUMMARY
+          if (Test-Path -LiteralPath 'out/ci/receipt.json') {
+            $receipt = Get-Content -Raw -LiteralPath 'out/ci/receipt.json' | ConvertFrom-Json
+            "Real Serve: **$($receipt.realServe)**. Basic CI is not full release acceptance." >> $env:GITHUB_STEP_SUMMARY
+          } else {
+            'Real Serve: **not run** — no CI receipt was produced.' >> $env:GITHUB_STEP_SUMMARY
+          }
+      - name: Preserve bounded build receipts
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: native-basic-${{ matrix.os }}
+          retention-days: 7
+          if-no-files-found: error
+          path: |
+            out/dependencies/receipt.json
+            out/dependencies/logs/*.log
+            out/ci/receipt.json
+            out/ci/*.xml
+            out/ci/logs/*.log
