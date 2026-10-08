@@ -357,8 +357,8 @@
     },
     {
       "path": "packaging/RELEASE.md",
-      "bytes": 6219,
-      "sha256": "99ef3000c83ec35d517883993873946054527d39dbd3be368a829ab59a14908d"
+      "bytes": 6645,
+      "sha256": "88bfe18dd38269bc1a7dbae423f1df21438fb89a5318e6ffb4458952e8b06962"
     },
     {
       "path": "packaging/RIGHTS.txt",
@@ -752,13 +752,13 @@
     },
     {
       "path": "tools/package_release.py",
-      "bytes": 18953,
-      "sha256": "fef08aa06d072475a2a74f7a5525fea3f37b26ecdf3a67e879f757920abfc0ab"
+      "bytes": 19443,
+      "sha256": "ff2b40a9f01eef073cc4c58a8df71a48b4ffe83ce74ada3b511a4f6f1586f2be"
     },
     {
       "path": "tools/package_release_test.py",
-      "bytes": 11606,
-      "sha256": "083c29d707ea8775501314655fb5de537b37b8fb3bcb46f19862206dbe124b7e"
+      "bytes": 12760,
+      "sha256": "6b265bb2f3d66ecd52cfa3d912f121edee25daed724a6de4a2ac0701ba3e7e65"
     },
     {
       "path": "tools/prepare_dependencies.py",

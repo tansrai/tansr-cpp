@@ -15,7 +15,8 @@ import zipfile
 ROOT = Path(__file__).resolve().parents[1]
 DEMOS = ('tansr-chat', 'tansr-tools', 'tansr-archive')
 LICENSES = ('curl-8.22.0-COPYING', 'c-ares-1.34.8-LICENSE.md', 'openssl-3.5.9-LICENSE.txt')
-BAD_PATH = re.compile(rb'(?:(?<![A-Za-z0-9_])[A-Za-z]:[\\/](?!/)|(?<![A-Za-z0-9_./\\-])/(?:Users|home|workspace|workspaces)/)[^\x00\r\n\t "<>]{3,}')
+PATH_START = rb"(?<![^\x00\t\r\n \"'=()\[\]{}<>])"
+BAD_PATH = re.compile(PATH_START + rb'(?:[A-Za-z]:[\\/](?!/)|/(?:Users|home|workspace|workspaces)/)[^\x00\r\n\t "<>]{3,}')
 UTF16_ASCII = re.compile(rb'(?:[\x20-\x7e]\x00){4,}')
 FORBIDDEN = (b'-----BEGIN PRIVATE KEY-----', b'-----BEGIN RSA PRIVATE KEY-----',
              b'-----BEGIN OPENSSH PRIVATE KEY-----')
@@ -51,11 +52,15 @@ def safe_name(name):
 
 def clean_bytes(data, label, forbidden_paths):
     # CodeView/字符串池同样检查；不能只移除 PDB 后宣称无构建机路径。
+    # Exact private prefixes apply at every byte position, independently of the
+    # heuristic string boundary below, including real UTF-16 and Unicode paths.
+    for value in forbidden_paths:
+        if value and (value in data or value.decode('utf-8').encode('utf-16le') in data
+                      or value.decode('utf-8').encode('utf-16be') in data):
+            raise ValueError('original private prefix in selected payload: ' + label)
     views = [data]
     views.extend(match.group().decode('utf-16le').encode() for match in UTF16_ASCII.finditer(data))
     for view in views:
-        if any(value and value in view for value in forbidden_paths):
-            raise ValueError('original private prefix in selected payload: ' + label)
         # OpenSSL's standard public runtime search locations are not build paths.
         for prefix in PUBLIC_SYSTEM_PATHS:
             view = view.replace(prefix, b'<system-openssl>').replace(prefix.replace(b'/', b'\\'), b'<system-openssl>')
@@ -70,7 +75,8 @@ def clean_bytes(data, label, forbidden_paths):
                 candidate = match.group().decode('utf-8')
             except UnicodeDecodeError:
                 continue
-            if candidate.isprintable():
+            components = candidate[3:].replace('\\', '/').split('/') if candidate[1:2] == ':' else candidate.split('/')
+            if candidate.isprintable() and any(len(component) >= 2 for component in components):
                 paths.append(candidate)
         if paths or any(value in view for value in FORBIDDEN):
             raise ValueError('private path or key marker in selected payload: ' + label)

@@ -173,6 +173,20 @@ class ReleaseTests(unittest.TestCase):
             with self.subTest(text=text), self.assertRaises(ValueError):
                 release.Payload([]).put('real-utf16.lib', b'\x81' + text.encode('utf-16le') + b'\0\0')
 
+    def test_numeric_table_is_not_a_path_but_exact_private_prefix_is_always_blocked(self):
+        # Actual SM2 numeric table bytes: q:/ followed by one valid Unicode scalar.
+        data = bytes.fromhex('a09c308a724c4aa14c9981bd713a2fe2bea022d884faa098c41c398de5692589')
+        release.Payload([]).put('libcrypto.a', data)
+        release.Payload([]).put('short-non-path.lib', b'\0q:/\xe2\xbe\xa0\0')
+        for text in ('J:/私有/源代码.cpp', '/home/developer/private/build', 'C:\\Users\\Alice\\project'):
+            for encoding in ('utf-8', 'utf-16le', 'utf-16be'):
+                with self.subTest(text=text, encoding=encoding), self.assertRaises(ValueError):
+                    # A non-string byte before a known private prefix cannot hide it.
+                    release.Payload([text.encode()]).put('exact-prefix.lib', b'\xbd' + text.encode(encoding) + b'\x81')
+        for text in ('J:/私有/源代码.cpp', 'C:\\Users\\Alice\\project', '/home/developer/private/build'):
+            with self.subTest(text=text), self.assertRaises(ValueError):
+                release.Payload([]).put('actual-path.lib', b'\0' + text.encode() + b'\0')
+
     def test_failed_input_preserves_failure_receipt_and_does_not_overwrite(self):
         meta = self.fixture()
         self.put(self.install, 'lib/tansr_sdk.lib', b'!<arch>\nJ:\\tansr\\source.cpp')
