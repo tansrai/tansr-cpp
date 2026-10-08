@@ -1,8 +1,8 @@
 # Tansr C++ SDK
 
-[中文](README.md) · [Guide](doc/guide.md) · [Source](https://github.com/tansrai/tansr-cpp) · [Releases](https://github.com/tansrai/tansr-cpp/releases)
+[中文](README.md) · [Guide](doc/guide.md) · [Source](https://github.com/tansrai/tansr-cpp) · [Download v0.1.0](https://github.com/tansrai/tansr-cpp/releases/tag/v0.1.0)
 
-The SDK, three demos and public documentation use the [MIT license](LICENSE). The first version is **0.1.0**. Source archives, binaries and recipes with fixed checksums are being prepared; this does not mean a version has been published or listed in vcpkg/ConanCenter.
+The SDK, three CLI demos and public documentation use the [MIT license](LICENSE). The **[v0.1.0 release](https://github.com/tansrai/tansr-cpp/releases/tag/v0.1.0)** provides source archives, SDK and separate demo packages for Windows x64 / Linux x64 / macOS arm64, checksums and pinned recipes. Conan/vcpkg recipes are independently distributed and are not listed in ConanCenter or the public vcpkg registry.
 
 A native C++17 library consuming Serve's unified `/api`. Serve owns the agent loop, session state, context, memory selection, permissions, adjudication, tool scheduling and usage. This SDK provides protocol bindings, session streaming, explicitly registered business tools and encrypted local archives. It does not launch a Node/Rust/Go client proxy or alter Electron's integrated SDK mode.
 
@@ -24,7 +24,7 @@ ctest --preset release
 cmake --install out/release --prefix /absolute/tansr-cpp-0.1.0
 ```
 
-Build with a C++17 toolchain, CMake 3.25+ and Ninja (used by the presets). Dependencies are fixed to curl 8.22.0, c-ares 1.34.8 and OpenSSL 3.5.9. Source CMake never downloads them implicitly. Match compiler, build configuration and CRT (`/MD` or `/MDd` on Windows). See [dependencies and versioned recipes](packaging/README.md). Candidates target Windows x64 / MSVC 19.44, Linux x64 / Ubuntu 24.04 / GCC 13, and macOS arm64 with minimum deployment target 26.0. See the guide for exact requirements; cross-compilation alone does not establish native support.
+Build with a C++17 toolchain, CMake 3.25+ and Ninja (used by the presets). Dependencies are fixed to curl 8.22.0, c-ares 1.34.8 and OpenSSL 3.5.9. Source CMake never downloads them implicitly. Match compiler, build configuration and CRT (`/MD` or `/MDd` on Windows). See [dependencies and versioned recipes](packaging/README.md). The v0.1.0 binaries target Windows x64 / MSVC 19.44, Linux x64 / Ubuntu 24.04 / GCC 13, and macOS arm64 with minimum deployment target 26.0. See the guide and each artifact manifest for exact requirements.
 
 The three demos consume only public SDK APIs:
 

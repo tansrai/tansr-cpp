@@ -1,8 +1,8 @@
 # Tansr C++ SDK
 
-[English](README.en.md) · [使用指南](doc/使用指南.md) · [源码](https://github.com/tansrai/tansr-cpp) · [发行入口](https://github.com/tansrai/tansr-cpp/releases)
+[English](README.en.md) · [使用指南](doc/使用指南.md) · [源码](https://github.com/tansrai/tansr-cpp) · [v0.1.0 下载](https://github.com/tansrai/tansr-cpp/releases/tag/v0.1.0)
 
-SDK、三个 Demo 和公开文档使用 [MIT 许可](LICENSE)。首版版本为 **0.1.0**，正式源码包、二进制和固定摘要配方正在准备；此说明不代表版本已发布或已进入 vcpkg/ConanCenter。
+SDK、三个 CLI Demo 和公开文档使用 [MIT 许可](LICENSE)。**[v0.1.0 正式发行](https://github.com/tansrai/tansr-cpp/releases/tag/v0.1.0)** 提供源码包、Windows x64 / Linux x64 / macOS arm64 的 SDK 与独立 Demo 包、校验清单及固定摘要配方。Conan/vcpkg 配方为自有分发，尚未进入 ConanCenter/vcpkg 公共索引。
 
 原生 C++17 库，通过统一 `/api` 连接本地或远端 Serve。Serve 保有智能体循环、会话、上下文、记忆准入、权限裁决、工具调度与用量；C++ 提供协议客户端、会话流、显式业务工具执行及加密本地档案。无需 Node/Rust/Go 客户端代理，Electron 集成模式保持不变。
 
@@ -24,7 +24,7 @@ ctest --preset release
 cmake --install out/release --prefix /absolute/tansr-cpp-0.1.0
 ```
 
-构建需要 C++17 工具链、CMake 3.25+ 和 Ninja（预设使用 Ninja）。依赖固定为 curl 8.22.0、c-ares 1.34.8、OpenSSL 3.5.9；源码 CMake 不自动下载。Windows 默认 `/MD`/`/MDd`，所有依赖须同配置。见[依赖与版本配方](packaging/README.md)。候选平台为 Windows x64 / MSVC 19.44、Linux x64 / Ubuntu 24.04 / GCC 13 和 macOS arm64 / 最低部署目标 26.0；精确条件见指南，不能以交叉编译代替原生运行证据。
+构建需要 C++17 工具链、CMake 3.25+ 和 Ninja（预设使用 Ninja）。依赖固定为 curl 8.22.0、c-ares 1.34.8、OpenSSL 3.5.9；源码 CMake 不自动下载。Windows 默认 `/MD`/`/MDd`，所有依赖须同配置。见[依赖与版本配方](packaging/README.md)。v0.1.0 二进制平台为 Windows x64 / MSVC 19.44、Linux x64 / Ubuntu 24.04 / GCC 13 和 macOS arm64 / 最低部署目标 26.0；精确条件见指南及对应制品清单。
 
 三个 Demo 只链接公开 SDK：
 

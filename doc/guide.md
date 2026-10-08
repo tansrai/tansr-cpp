@@ -6,7 +6,7 @@ This native C++17 SDK consumes the unified `/api` contract, UAPI revision 7. It 
 
 ## 1. Build and consume
 
-The SDK and demos are licensed under [MIT](../LICENSE), with source at [tansrai/tansr-cpp](https://github.com/tansrai/tansr-cpp). The 0.1.0 source archive, binaries and checksum-pinned recipes are being prepared; this is not a claim that a formal version or community package is available.
+The SDK and three CLI demos are licensed under [MIT](../LICENSE), with source at [tansrai/tansr-cpp](https://github.com/tansrai/tansr-cpp). Download the source archive, matching SDK or separate demo packages from the **[v0.1.0 release](https://github.com/tansrai/tansr-cpp/releases/tag/v0.1.0)** and verify them against that release's checksums. Binaries cover Windows x64, Linux x64 and macOS arm64. Use the release's independently distributed Conan/vcpkg recipe bundle; these recipes are not listed in the public community registries.
 
 Use CMake 3.25+ and a C++17 compiler; the commands below use Ninja. An extracted binary SDK contains `include/`, `lib/`, `dependencies/` and `share/TansrSDK/`. Preserve this layout and pass only the SDK root to `CMAKE_PREFIX_PATH`; its package configuration finds the bundled dependencies locally. Consuming the binary SDK requires no Node, Go, Rust or SDK source checkout.
 
@@ -54,7 +54,7 @@ int main() {
 }
 ```
 
-The current binary candidate is a Release static SDK. With a matching compiler, architecture and CRT, run from the application directory:
+The v0.1.0 binary package provides a Release static SDK. With a matching compiler, architecture and CRT, run from the application directory:
 
 ```sh
 cmake -S . -B build -G Ninja -DCMAKE_BUILD_TYPE=Release -DCMAKE_PREFIX_PATH=/absolute/tansr-cpp-sdk-0.1.0
@@ -68,13 +68,13 @@ Public headers under `include/tansr` do not expose curl, OpenSSL or third-party 
 
 The demos have the same executable names as the Rust demos. Install to an independent prefix and invoke the intended executable by full path; do not replace another SDK's installation.
 
-The current artifact candidates use these platform baselines. Check each eventual artifact's compiler, dependency and minimum-system labels. Rebuilding the source does not establish that an existing binary works on older systems.
+The v0.1.0 artifacts use these platform baselines. Check each artifact manifest's compiler, dependency and minimum-system labels. Rebuilding the source does not establish that an existing binary works on older systems.
 
-| Candidate | Build and installation requirements |
+| Platform | Build and installation requirements |
 |---|---|
 | Windows x64 | VS 2022 / MSVC 19.44, Release `/MD` and Debug `/MDd`; use an x64 Native Tools shell and deploy the matching MSVC runtime |
 | Linux x64 | Ubuntu 24.04 / GCC 13 / glibc 2.39; verify the final artifact's actual glibc/GLIBCXX symbol requirements |
-| macOS arm64 | Apple toolchain; the current candidate's minimum deployment target is macOS 26.0, with no claim of compatibility with earlier versions |
+| macOS arm64 | Apple toolchain; the v0.1.0 artifacts' minimum deployment target is macOS 26.0, with no claim of compatibility with earlier versions |
 
 Building from source still requires prepared, matching curl 8.22.0, c-ares 1.34.8 and OpenSSL 3.5.9 dependencies from [dependencies.json](../packaging/dependencies.json). Default CMake configuration does not download them; generated operations are already in the source tree. See the [recipes](../packaging/README.md) for source installation. For a normal source installation without bundled dependencies, provide both prefixes:
 
@@ -230,4 +230,4 @@ Check every `Result<T>`. Retain original identifiers, request bodies, deadlines 
 
 Serve must provide UAPI revision 7, the selected family and enabled operations. Handle disabled capabilities, insufficient current authorization and mismatched contract fingerprints as failures; do not change family or recreate an operation to avoid them. Tool output, offload and archive materials require their corresponding capability negotiation. A Serve version number does not replace these checks.
 
-Public-source development uses `python tools/contract_check.py --mode public` to verify the 20 original assets in the distribution declaration. The 39-file internal reference set and private history are not distributed. [Mainline CI](https://github.com/tansrai/tansr-cpp/actions) and [release records](https://github.com/tansrai/tansr-cpp/releases) are the entry points for validation and artifacts. Release records should identify native execution on three operating systems, real Serve and installed-package evidence with their limits. This guide or successful `--help` execution does not replace that evidence. See [NOTICE](../packaging/NOTICE.md) for third-party licenses.
+Public-source development uses `python tools/contract_check.py --mode public` to verify the 20 original assets in the distribution declaration. The 39-file internal reference set and private history are not distributed. [Mainline CI](https://github.com/tansrai/tansr-cpp/actions) and the [v0.1.0 release record](https://github.com/tansrai/tansr-cpp/releases/tag/v0.1.0) are the entry points for validation and artifacts. Check the release record for native execution on three operating systems, real Serve and installed-package evidence with their limits. This guide or successful `--help` execution does not replace that evidence. See [NOTICE](../packaging/NOTICE.md) for third-party licenses.

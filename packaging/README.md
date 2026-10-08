@@ -1,6 +1,6 @@
 # 版本化包配方 / Versioned package recipes
 
-SDK、三个 Demo 与公开文档使用根目录 [MIT LICENSE](../LICENSE)，仓库为 [tansrai/tansr-cpp](https://github.com/tansrai/tansr-cpp)。0.1.0 的正式源码包、二进制和固定摘要配方正在准备；当前不宣称正式版已发布或已进入 vcpkg/ConanCenter。
+SDK、三个 CLI Demo 与公开文档使用根目录 [MIT LICENSE](../LICENSE)，仓库为 [tansrai/tansr-cpp](https://github.com/tansrai/tansr-cpp)。[v0.1.0 正式发行](https://github.com/tansrai/tansr-cpp/releases/tag/v0.1.0) 提供源码包、三平台二进制、校验清单与固定摘要配方；Conan/vcpkg 为自有配方分发，尚未进入 vcpkg/ConanCenter 公共索引。
 
 二进制 SDK 包在 `dependencies/` 携带匹配的开发依赖，安装配置局部查找该目录；普通应用只需 SDK 解包根目录作为 `CMAKE_PREFIX_PATH`。完整 `main.cpp`、CMake 和运行命令见[中文指南](../doc/使用指南.md)与 [English guide](../doc/guide.md)。宿主显式设置 `TansrSDK_NO_BUNDLED_DEPENDENCIES=ON` 时须另行提供匹配依赖前缀。三个 Demo 各自单独成包，从各自的 `bin/` 调用，不用作 SDK 链接目录。
 
@@ -23,12 +23,12 @@ ctest --test-dir out/consumer --output-on-failure
 
 ## 固定源码与配方入口
 
-正式入口为同版 [GitHub Release](https://github.com/tansrai/tansr-cpp/releases) 的源码归档、校验清单及独立配方包；源码归档有单个顶层目录。配方只允许该仓 `releases/download/v0.1.0/` 下的固定制品，并由密码摘要校验内容，不读取开发工作树、不下载 main 或移动分支。
+正式入口为 [v0.1.0 GitHub Release](https://github.com/tansrai/tansr-cpp/releases/tag/v0.1.0) 的源码归档、校验清单及独立配方包；源码归档有单个顶层目录。配方只允许该仓 `releases/download/v0.1.0/` 下的固定制品，并由密码摘要校验内容，不读取开发工作树、不下载 main 或移动分支。
 
 - Conan：`conan/conandata.yml` 的 `sources["0.1.0"]` 记录真实 URL、SHA256。
 - vcpkg：`vcpkg/tansr-sdk/source.json` 记录版本、真实 URL、SHA512。
 
-源码包冻结后，再将真实 URL/摘要写入独立配方发行包。这样不要求源码归档内的文件包含其自身摘要。当前空值是明确的准备状态，配方会在下载前失败；不能填零摘要、猜测摘要或去掉校验。使用完整同版配方包，不能将未完成的入口当成已经可用的正式包。
+使用发行附件中的完整同版配方包，其真实 URL/摘要在源码归档冻结后写入。源码树中的配方元数据保留空值，避免要求源码归档包含自身摘要；直接使用这些空记录会在下载前失败。不要复制空记录覆盖发行配方，也不要填零摘要、猜测摘要或去掉校验。
 
 ## vcpkg overlay
 
@@ -60,10 +60,10 @@ Conan 从版本记录获取源码并验证 SHA256，再配置、构建和安装�
 
 ## English summary
 
-The SDK and demos use MIT. Version 0.1.0 release artifacts are being prepared; no public release or community registry listing is claimed. The binary SDK bundles matching development dependencies under `dependencies/`; preserve that layout and pass only the SDK root to `CMAKE_PREFIX_PATH`. See the [guide](../doc/guide.md) for a standalone application. Opting out with `TansrSDK_NO_BUNDLED_DEPENDENCIES=ON` requires a matching host dependency prefix. Each demo is a separate artifact with its executable under `bin/`.
+The SDK and three CLI demos use MIT. The [v0.1.0 release](https://github.com/tansrai/tansr-cpp/releases/tag/v0.1.0) provides source archives, binaries for three platforms, checksums and pinned recipes; the recipes are not listed in public community registries. The binary SDK bundles matching development dependencies under `dependencies/`; preserve that layout and pass only the SDK root to `CMAKE_PREFIX_PATH`. See the [guide](../doc/guide.md) for a standalone application. Opting out with `TansrSDK_NO_BUNDLED_DEPENDENCIES=ON` requires a matching host dependency prefix. Each demo is a separate artifact with its executable under `bin/`.
 
 Build CMake sources with matched external dependencies from `dependencies.json`. Use the commands above with the same compiler, architecture, configuration and CRT; Windows defaults to `/MD` or `/MDd`. Binary artifacts still require their declared OS/CRT runtimes.
 
-The completed recipe bundle for a GitHub Release pins its source archive URL and SHA256 (Conan) or SHA512 (vcpkg). Source archives have one top-level directory. Empty records intentionally fail before downloading. Release maintainers freeze the source archive first, then fill its actual checksums into a separate recipe bundle; consumers do not provide a development source directory or bypass validation. `TANSR_CPP_DEPENDENCY_PREFIX` and its `_DEBUG` counterpart identify prepared dependency prefixes only. Conan uses `user.tansr:dependency_prefix` for the matching build configuration.
+Use the complete recipe bundle attached to the v0.1.0 release. It pins the source archive URL and SHA256 (Conan) or SHA512 (vcpkg). Source archives have one top-level directory. Recipe metadata inside the source tree remains empty because an archive cannot contain its own checksum; these empty records intentionally fail before downloading. The separate release recipe bundle contains the actual checksums. Do not overwrite it with empty source-tree records, supply a development source directory or bypass validation. `TANSR_CPP_DEPENDENCY_PREFIX` and its `_DEBUG` counterpart identify prepared dependency prefixes only. Conan uses `user.tansr:dependency_prefix` for the matching build configuration.
 
 These are independently distributed recipes, not vcpkg/ConanCenter entries. Native package consumption, checksums and ABI labels must be verified for each released platform. Retain the SDK MIT license and third-party notices, and install the demos to a separate prefix from other language SDKs.
