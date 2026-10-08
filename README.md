@@ -8,6 +8,38 @@ SDK、三个 CLI Demo 和公开文档使用 [MIT 许可](LICENSE)。**[v0.1.0 �
 
 冻结 UAPI revision 7：11 族、81 操作；源码与指纹在 `contract/`。默认 `sdk1`，`sdk2-offload-v1` 必须显式选择并通过能力协商；错误不会触发改族、换用户或自动重放副作用。HTTP + SSE，不使用 WebSocket。
 
+## 选择发行包并校验
+
+集成自己的 C++ 应用下载对应的 **SDK** 包；运行示例下载该平台的 **chat / tools / archive** 包。三个 Demo 都是独立可执行程序，分别使用各自解包目录中的 `bin/`。它们需要可访问的 Serve 和有效的短期凭据；`--help` 可先查看参数。
+
+| 平台 | SDK | 独立 Demo |
+|---|---|---|
+| Windows x64 / MSVC 19.44 | [SDK (zip)](https://github.com/tansrai/tansr-cpp/releases/download/v0.1.0/tansr-cpp-0.1.0-windows-x64-msvc-19.44.35221-release-static-sdk.zip) | [chat](https://github.com/tansrai/tansr-cpp/releases/download/v0.1.0/tansr-cpp-0.1.0-windows-x64-msvc-19.44.35221-release-static-tansr-chat.zip) · [tools](https://github.com/tansrai/tansr-cpp/releases/download/v0.1.0/tansr-cpp-0.1.0-windows-x64-msvc-19.44.35221-release-static-tansr-tools.zip) · [archive](https://github.com/tansrai/tansr-cpp/releases/download/v0.1.0/tansr-cpp-0.1.0-windows-x64-msvc-19.44.35221-release-static-tansr-archive.zip) |
+| Linux x64 / GCC 13.3 | [SDK (tar.gz)](https://github.com/tansrai/tansr-cpp/releases/download/v0.1.0/tansr-cpp-0.1.0-linux-x64-gcc-13.3.0-release-static-sdk.tar.gz) | [chat](https://github.com/tansrai/tansr-cpp/releases/download/v0.1.0/tansr-cpp-0.1.0-linux-x64-gcc-13.3.0-release-static-tansr-chat.tar.gz) · [tools](https://github.com/tansrai/tansr-cpp/releases/download/v0.1.0/tansr-cpp-0.1.0-linux-x64-gcc-13.3.0-release-static-tansr-tools.tar.gz) · [archive](https://github.com/tansrai/tansr-cpp/releases/download/v0.1.0/tansr-cpp-0.1.0-linux-x64-gcc-13.3.0-release-static-tansr-archive.tar.gz) |
+| macOS arm64 / AppleClang 21 | [SDK (tar.gz)](https://github.com/tansrai/tansr-cpp/releases/download/v0.1.0/tansr-cpp-0.1.0-macos-arm64-appleclang21.0.0-release-static-sdk.tar.gz) | [chat](https://github.com/tansrai/tansr-cpp/releases/download/v0.1.0/tansr-cpp-0.1.0-macos-arm64-appleclang21.0.0-release-static-tansr-chat.tar.gz) · [tools](https://github.com/tansrai/tansr-cpp/releases/download/v0.1.0/tansr-cpp-0.1.0-macos-arm64-appleclang21.0.0-release-static-tansr-tools.tar.gz) · [archive](https://github.com/tansrai/tansr-cpp/releases/download/v0.1.0/tansr-cpp-0.1.0-macos-arm64-appleclang21.0.0-release-static-tansr-archive.tar.gz) |
+
+SDK 包提供 Release 静态库，Demo 包各提供独立可执行程序。Windows 使用 x64、Release `/MD` 与匹配的 MSVC 运行库；Linux 制品在 Ubuntu 24.04 验证，所需符号下界为 glibc 2.38 / GLIBCXX 3.4.32；Mac 包要求 arm64、macOS 26.0+。其他编译器、架构、Debug 或共享库配置按[指南](doc/使用指南.md)从源码构建，保持依赖与配置匹配。
+
+同版下载 [SHA256SUMS](https://github.com/tansrai/tansr-cpp/releases/download/v0.1.0/SHA256SUMS) 和 [制品清单](https://github.com/tansrai/tansr-cpp/releases/download/v0.1.0/public-asset-manifest.json)，在下载目录计算所选文件的 SHA256，与校验表中**该完整文件名**的一行核对；一致后再解包。以下各行分别用于对应系统：
+
+```powershell
+# Windows PowerShell
+Get-FileHash .\tansr-cpp-0.1.0-windows-x64-msvc-19.44.35221-release-static-sdk.zip -Algorithm SHA256
+```
+
+```sh
+# Linux
+sha256sum tansr-cpp-0.1.0-linux-x64-gcc-13.3.0-release-static-sdk.tar.gz
+# macOS
+shasum -a 256 tansr-cpp-0.1.0-macos-arm64-appleclang21.0.0-release-static-sdk.tar.gz
+```
+
+解包后，SDK 的根目录应直接包含 `include/`、`lib/`、`dependencies/` 和 `share/`；将这个根目录传给后面的 CMake 命令。Demo 的凭据文件、服务地址、会话 ID 和持久目录按[使用指南](doc/使用指南.md)设置。认证由开发者可信后端及 Serve 提供，发行包不包含可用于真实服务的测试账号或模型密钥。
+
+v0.1.0 的 tag 和下载附件保持冻结；本仓 `main` 持续补充同版本的使用文档。[版本化配方](packaging/README.md)使用独立 recipes 附件中的固定源码摘要；SDK 源码归档内的空配方元数据仍保留其原检查行为。
+
+## 构建自己的应用
+
 ```cmake
 find_package(TansrSDK 0.1.0 EXACT CONFIG REQUIRED)
 target_link_libraries(my_app PRIVATE tansr::sdk)

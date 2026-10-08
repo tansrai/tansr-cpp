@@ -8,6 +8,38 @@ A native C++17 library consuming Serve's unified `/api`. Serve owns the agent lo
 
 The locked UAPI revision 7 contains 81 operations in 11 families. `sdk1` is the default; `sdk2-offload-v1` is explicit and capability checked. Failures never silently change family/user or replay side effects. Transport is HTTP + SSE, not WebSocket.
 
+## Choose and verify a release package
+
+Download the matching **SDK** package to integrate a C++ application, or the **chat / tools / archive** packages to run the examples. Each demo is a separate executable in its own extracted `bin/` directory. Running a session requires a reachable Serve and valid short-lived credentials; start with `--help` to inspect the options.
+
+| Platform | SDK | Separate demos |
+|---|---|---|
+| Windows x64 / MSVC 19.44 | [SDK (zip)](https://github.com/tansrai/tansr-cpp/releases/download/v0.1.0/tansr-cpp-0.1.0-windows-x64-msvc-19.44.35221-release-static-sdk.zip) | [chat](https://github.com/tansrai/tansr-cpp/releases/download/v0.1.0/tansr-cpp-0.1.0-windows-x64-msvc-19.44.35221-release-static-tansr-chat.zip) · [tools](https://github.com/tansrai/tansr-cpp/releases/download/v0.1.0/tansr-cpp-0.1.0-windows-x64-msvc-19.44.35221-release-static-tansr-tools.zip) · [archive](https://github.com/tansrai/tansr-cpp/releases/download/v0.1.0/tansr-cpp-0.1.0-windows-x64-msvc-19.44.35221-release-static-tansr-archive.zip) |
+| Linux x64 / GCC 13.3 | [SDK (tar.gz)](https://github.com/tansrai/tansr-cpp/releases/download/v0.1.0/tansr-cpp-0.1.0-linux-x64-gcc-13.3.0-release-static-sdk.tar.gz) | [chat](https://github.com/tansrai/tansr-cpp/releases/download/v0.1.0/tansr-cpp-0.1.0-linux-x64-gcc-13.3.0-release-static-tansr-chat.tar.gz) · [tools](https://github.com/tansrai/tansr-cpp/releases/download/v0.1.0/tansr-cpp-0.1.0-linux-x64-gcc-13.3.0-release-static-tansr-tools.tar.gz) · [archive](https://github.com/tansrai/tansr-cpp/releases/download/v0.1.0/tansr-cpp-0.1.0-linux-x64-gcc-13.3.0-release-static-tansr-archive.tar.gz) |
+| macOS arm64 / AppleClang 21 | [SDK (tar.gz)](https://github.com/tansrai/tansr-cpp/releases/download/v0.1.0/tansr-cpp-0.1.0-macos-arm64-appleclang21.0.0-release-static-sdk.tar.gz) | [chat](https://github.com/tansrai/tansr-cpp/releases/download/v0.1.0/tansr-cpp-0.1.0-macos-arm64-appleclang21.0.0-release-static-tansr-chat.tar.gz) · [tools](https://github.com/tansrai/tansr-cpp/releases/download/v0.1.0/tansr-cpp-0.1.0-macos-arm64-appleclang21.0.0-release-static-tansr-tools.tar.gz) · [archive](https://github.com/tansrai/tansr-cpp/releases/download/v0.1.0/tansr-cpp-0.1.0-macos-arm64-appleclang21.0.0-release-static-tansr-archive.tar.gz) |
+
+SDK packages contain Release static libraries; each demo package contains a standalone executable. Windows requires x64, Release `/MD` and matching MSVC runtimes. The Linux binaries were validated on Ubuntu 24.04 and require at least the glibc 2.38 / GLIBCXX 3.4.32 symbols. The Mac package requires arm64 and macOS 26.0+. For other compilers, architectures, Debug or shared-library configurations, follow the [source-build guide](doc/guide.md) with matching dependencies and configuration.
+
+Download the versioned [SHA256SUMS](https://github.com/tansrai/tansr-cpp/releases/download/v0.1.0/SHA256SUMS) and [asset manifest](https://github.com/tansrai/tansr-cpp/releases/download/v0.1.0/public-asset-manifest.json). In your download directory, calculate the selected file's SHA256 and compare it with the row for its **complete filename**. Extract the package only after the values match. Use the command for your operating system:
+
+```powershell
+# Windows PowerShell
+Get-FileHash .\tansr-cpp-0.1.0-windows-x64-msvc-19.44.35221-release-static-sdk.zip -Algorithm SHA256
+```
+
+```sh
+# Linux
+sha256sum tansr-cpp-0.1.0-linux-x64-gcc-13.3.0-release-static-sdk.tar.gz
+# macOS
+shasum -a 256 tansr-cpp-0.1.0-macos-arm64-appleclang21.0.0-release-static-sdk.tar.gz
+```
+
+The extracted SDK root directly contains `include/`, `lib/`, `dependencies/` and `share/`; pass that root to CMake below. Configure each demo's credential files, origin, session ID and persistent directories using the [guide](doc/guide.md). Your trusted backend and Serve provide authentication. The release does not include a test account or model key for a live service.
+
+The v0.1.0 tag and assets remain frozen; repository `main` maintains supplemental documentation for that release. [Versioned recipes](packaging/README.md) use the pinned source checksums in the separate recipes archive. Empty recipe metadata inside the source snapshot retains its original validation behavior.
+
+## Build your application
+
 ```cmake
 find_package(TansrSDK 0.1.0 EXACT CONFIG REQUIRED)
 target_link_libraries(my_app PRIVATE tansr::sdk)

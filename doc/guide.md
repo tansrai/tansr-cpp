@@ -72,9 +72,9 @@ The v0.1.0 artifacts use these platform baselines. Check each artifact manifest'
 
 | Platform | Build and installation requirements |
 |---|---|
-| Windows x64 | VS 2022 / MSVC 19.44, Release `/MD` and Debug `/MDd`; use an x64 Native Tools shell and deploy the matching MSVC runtime |
-| Linux x64 | Ubuntu 24.04 / GCC 13 / glibc 2.39; verify the final artifact's actual glibc/GLIBCXX symbol requirements |
-| macOS arm64 | Apple toolchain; the v0.1.0 artifacts' minimum deployment target is macOS 26.0, with no claim of compatibility with earlier versions |
+| Windows x64 | VS 2022 / MSVC 19.44; the released static SDK is Release `/MD`. `/MDd` applies only to Debug builds made from source. Build applications in an x64 Native Tools shell; running demos requires the matching MSVC runtime |
+| Linux x64 | GCC 13; verified on Ubuntu 24.04 / glibc 2.39. The released binaries' observed symbol floors are glibc 2.38 and GLIBCXX 3.4.32; this does not establish validation on every distribution satisfying those versions |
+| macOS arm64 | Apple Clang 21; the v0.1.0 artifacts' minimum deployment target is macOS 26.0, with no claim of compatibility with earlier versions |
 
 Building from source still requires prepared, matching curl 8.22.0, c-ares 1.34.8 and OpenSSL 3.5.9 dependencies from [dependencies.json](../packaging/dependencies.json). Default CMake configuration does not download them; generated operations are already in the source tree. See the [recipes](../packaging/README.md) for source installation. For a normal source installation without bundled dependencies, provide both prefixes:
 
@@ -90,6 +90,8 @@ For Windows shared builds made from source, deploy the SDK and dependency DLLs f
 Each demo has its own artifact; these are not SDK link directories. Extract each package separately and invoke its executable under `bin/`, adding `.exe` on Windows. For example, extract the chat package to `/absolute/tansr-chat-0.1.0` and run `/absolute/tansr-chat-0.1.0/bin/tansr-chat --help`. Their names match the Rust demos, so preserve existing installations. Configure credentials and the service origin as described next.
 
 ## 2. Authentication and current identity
+
+Before the first connection, obtain the service origin, available session family, short-lived token and current scope from the Serve operator or application backend, and confirm the model and application policy are configured. The SDK and demos connect to an existing Serve; they do not start or configure it. Neither `--help` nor the startup program in section 1 verifies these server conditions. Running `tansr-chat --message ...` without attach/resume creates a real session and sends a business turn.
 
 Serve validates short-lived tokens and current application policy. The SDK does not sign users in or retain a long-lived appkey. The demos read `TANSR_TOKEN_FILE` (one token line) and `TANSR_SCOPE_FILE` (the following UTF-8 JSON). Use two distinct files in the same private credential directory:
 
@@ -120,7 +122,20 @@ $env:TANSR_BASE_URL = 'https://serve.example.invalid'
 
 On Unix, use `bin/tansr-chat`, `bin/tansr-tools` and `bin/tansr-archive` from the selected install prefix. The commands below refer to that installation. A trusted host must create the credential files first; these environment variables contain paths, not token contents.
 
+All three demos share these options. Use `--option value`, not `--option=value`, and quote paths containing spaces. Duplicate options are rejected:
+
+| Option | Default and purpose |
+|---|---|
+| `--base ORIGIN` | Overrides `TANSR_BASE_URL`; defaults to `http://127.0.0.1:8787` when neither is set. Supply an origin without `/api` |
+| `--family FAMILY` | Defaults to `sdk1`; the other accepted value is `sdk2-offload-v1`. Explicitly retain the original family in subsequent processes |
+| `--token-file FILE`, `--scope-file FILE` | Override their respective environment variables. Values are absolute file paths, not token or JSON contents |
+| `--timeout SECONDS` | Defaults to `600`, accepts `1..86400`; bounds the current demo's total cancellation interval, including interaction, polling and waiting for materials |
+
+The default tools loop therefore does not run indefinitely; use, for example, `--timeout 3600` for a longer observation. This is not a fresh timeout for every request and does not extend a saved creation/material intent's deadline. Ordinary chat/tools writes have a separate 30-second deadline, which increasing `--timeout` does not change. Timeout or Ctrl+C cancels local work; it does not prove that a Serve write or business turn never happened.
+
 ApiClient accepts an HTTP(S) origin without credentials, a path, query or fragment. The current implementation does not restrict HTTP to loopback. Use plaintext only for loopback development as a deployment recommendation, and valid HTTPS for deployed services. Applications configure enterprise CA material through `RuntimeOptions.ca_file`; chain and hostname verification remain enabled. Demos never place tokens in command-line arguments, logs, error details or archives. Raw `Error.detail` may contain server or business content; applications must protect explicitly collected diagnostics.
+
+`RuntimeOptions.ca_file` is an SDK host setting. Released demos have no `--ca-file` option and use the default Runtime trust configuration. An application needing an explicit enterprise CA should configure this field through the SDK, rather than pass an unsupported demo option or disable certificate verification.
 
 ## 3. Runtime ownership
 
@@ -197,6 +212,14 @@ tansr-tools --journal /absolute/private-journal --require-output
 tansr-chat --attach SESSION_ID
 ```
 
+Wait for tools to print both `session:` and `ready:` before starting the second terminal. Configure the same credential paths and base in each terminal and use the family printed by tools; a new terminal does not automatically inherit another terminal's temporary environment settings. Tools creates a session when `--session` is absent. Use `--session SESSION_ID` to connect to a known session, rather than chat's `--attach` option. When restarting an executor, retain its journal and executor identity (`--executor` defaults to `cpp-demo`), for example:
+
+```sh
+tansr-tools --family sdk1 --session SESSION_ID --executor cpp-demo --journal /absolute/private-journal --require-output --timeout 3600
+```
+
+The existing session must still permit the current `DemoOrderStatus` capability binding; reconnecting does not bypass Serve policy. Creating a new offload session through tools also requires a caller-preserved `--request-id STABLE_ID`. Once the session ID is known, reconnect with `--session` and the same family. The journal records execution facts, not a durable session-creation intent. Keep uncertain journal facts; restarting does not authorize executing an uncertain business operation again.
+
 Serve application policy must permit `DemoOrderStatus`. The demo registers a read-only synthetic order function, without shell, file tools or a general executor. It uses the public registration, initialize, first bind, optional output negotiation and Runner APIs. Ask for order `DEMO-001`: the handler captures stdout, waits cooperatively for 750 ms, captures stderr, then the Runner seals output. Capture, durable output ACK/seal and the business receipt are separate facts. Output uncertainty never justifies re-running the business handler.
 
 `--run-once` handles one queued operation. The default loop continues polling and renewing its lease; Ctrl+C cooperatively cancels local execution. FileJournal is a private plaintext fact journal, not the encrypted archive. Return `ToolFailure::rejected` only when zero side effects can be proved; ambiguous cancellation, exceptions or lost output confirmation remain unknown. A business JSON result with `status: error` may still be a determinate execution result.
@@ -207,6 +230,8 @@ The authorizer rereads scope and checks app/user/revision/session/binding/worksp
 
 The Serve host registers a Source/provider first; this demo invents no registration route. Use separate private directories for credentials, keys, archive and intents. Set `TANSR_ARCHIVE_KEY_FILE` to a private file with 64 hexadecimal digits representing an AES-256 key. Use one key per archive and a host-managed `--key-id`. Do not store the key beside the archive or automatically replace it after decryption failure. FileStore has explicit key-rotation operations.
 
+First identify the binding to use. The prepare-create/create steps below apply to an SDK1 session without a binding when the host supports manual binding. Serve creates an offload session's Source/binding during session creation; reuse that original binding and proceed to sync/status instead of creating another one. Obtain the binding ID from the trusted host, or read it through `ArchiveClient::binding_target(SESSION_ID)` in an SDK application. The demo has no `--mode target`. Add `--family sdk2-offload-v1` to every offload archive invocation; do not accidentally use the default SDK1 family shown below.
+
 ```sh
 tansr-archive --mode prepare-create --session SESSION --source SOURCE --request-id bind-001 --intent /absolute/intents/create.json
 tansr-archive --mode create --intent /absolute/intents/create.json
@@ -215,12 +240,15 @@ tansr-archive --mode sync --binding BINDING --file /absolute/archive/history.bin
 tansr-archive --mode status --binding BINDING
 tansr-archive --mode recover --binding BINDING --file /absolute/archive/history.bin --key-id local-key-1 --request-id recover-001
 tansr-archive --mode materials --binding BINDING --file /absolute/archive/history.bin --key-id local-key-1 --request-id response-001 --intent /absolute/materials/response.json
+tansr-archive --mode material-submit --intent /absolute/materials/response.json
 tansr-archive --mode material-status --intent /absolute/materials/response.json
 ```
 
 Every invocation must retain the original family, base URL and scope. The `.owner` sidecar rejects cross-family/identity replay. `prepare-create` durably preserves the original body, request ID, epoch and absolute deadline before `create`; preparation does not create a binding. Expiry does not authorize changing the timestamp or key. Query the original operation's status instead. Existing intents are never overwritten; partial local failures retain evidence and are not reported as success.
 
 FileStore verifies page chains, record/body/attachment digests and current identity. It durably commits the complete page, attachments and pending ACK before sending the ACK. Sync completion, confirmed pending-ACK recovery, coverage and material consumption are different facts. `recover` reconciles the original pending operation or explicit stale recovery; it does not synchronize the whole archive. A generic 412, revoked authorization or expired epoch does not automatically rebase.
+
+Sync defaults to at most 64 pages per invocation; `--max-pages` accepts `1..1024`. Reaching that bound exits nonzero: continue with the original binding/file/key without deleting the archive. After recover confirms the original pending ACK, use sync for remaining pages. Recover/materials require the original archive file to exist. Materials waits for one actual current material request, or until local cancellation; material-status printing received and exiting nonzero means core-consumed is still unconfirmed, not permission to replace the intent and retransmit.
 
 `materials` observes a current request, fixes its first remaining TTL as an absolute deadline and persists the original `.request` intent. It supplies only explicitly requested verified records. Preparation, chunking and waiting do not extend that deadline. The final response is saved before submission. Reconcile a lost response with `material-submit` or `material-status` using the saved response; received does not mean core-consumed. Archive and materials are not a second authority for context, approval or billing, nor a claim of fully local memory, multi-copy backup or compatibility with another SDK's private file format.
 
@@ -229,5 +257,15 @@ FileStore verifies page chains, record/body/attachment digests and current ident
 Check every `Result<T>`. Retain original identifiers, request bodies, deadlines and local media when outcomes are uncertain. `ApiClient::retry_same_request` requires a permitted original error and matching request witness; it is not a generic automatic retry. Default logs exclude raw error detail, tokens, tool arguments and response bodies.
 
 Serve must provide UAPI revision 7, the selected family and enabled operations. Handle disabled capabilities, insufficient current authorization and mismatched contract fingerprints as failures; do not change family or recreate an operation to avoid them. Tool output, offload and archive materials require their corresponding capability negotiation. A Serve version number does not replace these checks.
+
+Demos exit normally with `0` on success and `1` for failures they report. On stderr, `code` is a numeric local `ErrorCode`, while `status` is the HTTP status (possibly `0` for a local failure); server errors may also include `wire` and `retry`. These fields help diagnosis and do not grant generic retry permission. For a first connection, check:
+
+| Symptom | Check and action |
+|---|---|
+| Package discovery, linking or executable loading fails | Point the SDK prefix at the extracted root with its complete layout. Check architecture, compiler, Release/CRT and the platform baselines above. Configure a new build directory after changing toolchains or prefixes; running a demo directly does not require CMake |
+| Credential, journal or archive path is rejected | Check absolute paths, current-user ownership, private permissions and every ancestor for links/reparse points. macOS `/tmp` and `/var` are often system path aliases; confirm the physical path of a directory you created and trust before passing it, rather than automatically following unknown input links |
+| Network/TLS error without a valid HTTP status | Check the origin, DNS/network, Serve listening address and certificate chain/hostname. Demos do not follow redirects; supply the final Serve origin. See section 2 for enterprise CA configuration |
+| Authentication, capability or contract rejection | Check the token, all three scope fields, original family, Serve configuration and application policy. `--require-output` additionally needs output capability. Do not hide rejection by switching identity/family or automatically dropping a requirement |
+| Timeout, nonzero exit or an unconfirmed outcome | Retain the printed session ID, original intent, journal, archive and key. Follow sections 4–6 for attach, original-intent reconciliation or recover as appropriate. An exit code is not proof that a business operation never ran |
 
 Public-source development uses `python tools/contract_check.py --mode public` to verify the 20 original assets in the distribution declaration. The 39-file internal reference set and private history are not distributed. [Mainline CI](https://github.com/tansrai/tansr-cpp/actions) and the [v0.1.0 release record](https://github.com/tansrai/tansr-cpp/releases/tag/v0.1.0) are the entry points for validation and artifacts. Check the release record for native execution on three operating systems, real Serve and installed-package evidence with their limits. This guide or successful `--help` execution does not replace that evidence. See [NOTICE](../packaging/NOTICE.md) for third-party licenses.

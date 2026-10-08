@@ -57,13 +57,13 @@
     },
     {
       "path": "README.en.md",
-      "bytes": 4238,
-      "sha256": "1fa94f9ca7d92906d596757cc5e652bbea4a38e51a4fa04e68a60d6c62a3345c"
+      "bytes": 8504,
+      "sha256": "2dc14910b84668d9a803fe16455de08052fe768cbc3dcd4cc291c686df2b03fb"
     },
     {
       "path": "README.md",
-      "bytes": 3733,
-      "sha256": "e46fc093b460606d410fa0ce0df6308303159d0f39081e63bf3fbd175948cd74"
+      "bytes": 7744,
+      "sha256": "aa83d8d5f29c545b56e5772abf9aa486aa9728f1b99055395d31808e0e4f5dd6"
     },
     {
       "path": "cmake/TansrSDKConfig.cmake.in",
@@ -227,13 +227,13 @@
     },
     {
       "path": "doc/guide.md",
-      "bytes": 21605,
-      "sha256": "405a6ac2dd94e09f84b2b65664b93af3ce45ad179e3f12b9be68c4e5bb000847"
+      "bytes": 28264,
+      "sha256": "017ae89fc35fea552e5c41c462fa9f56b719b8013106b9e31916a181ef25a09c"
     },
     {
       "path": "doc/使用指南.md",
-      "bytes": 18328,
-      "sha256": "2a0465efa8aa658ab46c46fa723a59a559c6097929758a2228371c09ecf15b90"
+      "bytes": 24024,
+      "sha256": "6ae7bcc57c8024b4166bb632f66a929d90f28a902367421697c8069c7b1f29ad"
     },
     {
       "path": "include/tansr/api.hpp",
