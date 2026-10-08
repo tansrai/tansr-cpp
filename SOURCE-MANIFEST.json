@@ -757,8 +757,8 @@
     },
     {
       "path": "tools/package_release_test.py",
-      "bytes": 12760,
-      "sha256": "6b265bb2f3d66ecd52cfa3d912f121edee25daed724a6de4a2ac0701ba3e7e65"
+      "bytes": 12770,
+      "sha256": "2dd381bec3b9e47120cd006a505f21331bdb53447f2f0d75ce879d4ad3a9216a"
     },
     {
       "path": "tools/prepare_dependencies.py",
@@ -767,8 +767,8 @@
     },
     {
       "path": "tools/prepare_dependencies_test.py",
-      "bytes": 2959,
-      "sha256": "41e45101eb2a1337523a54242adab1b57dedfe8b6a0ae0bf5a5227946e36c708"
+      "bytes": 2979,
+      "sha256": "10f3b0b7b318e6f2f028630841011525a0887e8263846148b28e03f8ca9807df"
     }
   ]
 }

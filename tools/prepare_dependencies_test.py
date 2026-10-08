@@ -26,7 +26,7 @@ class Extraction(unittest.TestCase):
 
     def reject(self, entries):
         with tempfile.TemporaryDirectory(prefix='tansr-cpp-extract-') as directory:
-            root = Path(directory)
+            root = Path(directory).resolve()
             with self.assertRaises(ValueError):
                 extract(self.archive(root, entries), root / 'result')
             self.assertFalse((root / 'result').exists())
@@ -63,7 +63,7 @@ class Extraction(unittest.TestCase):
 
     def test_internal_file_links(self):
         with tempfile.TemporaryDirectory(prefix='tansr-cpp-extract-') as directory:
-            root = Path(directory)
+            root = Path(directory).resolve()
             result = extract(self.archive(root, [('root/actual', tarfile.REGTYPE, 'trusted'),
                 ('root/sub/alias', tarfile.SYMTYPE, '../actual'),
                 ('root/hard', tarfile.LNKTYPE, 'root/actual')]), root / 'result')
