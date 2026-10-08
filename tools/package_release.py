@@ -15,7 +15,8 @@ import zipfile
 ROOT = Path(__file__).resolve().parents[1]
 DEMOS = ('tansr-chat', 'tansr-tools', 'tansr-archive')
 LICENSES = ('curl-8.22.0-COPYING', 'c-ares-1.34.8-LICENSE.md', 'openssl-3.5.9-LICENSE.txt')
-BAD_PATH = re.compile(rb'(?:(?<![A-Za-z0-9_])[A-Za-z]:[\\/]|/(?:Users|home|workspace|workspaces)/)[^\x00\r\n\t "<>]{3,}')
+BAD_PATH = re.compile(rb'(?:(?<![A-Za-z0-9_])[A-Za-z]:[\\/](?!/)|(?<![A-Za-z0-9_./\\-])/(?:Users|home|workspace|workspaces)/)[^\x00\r\n\t "<>]{3,}')
+UTF16_ASCII = re.compile(rb'(?:[\x20-\x7e]\x00){4,}')
 FORBIDDEN = (b'-----BEGIN PRIVATE KEY-----', b'-----BEGIN RSA PRIVATE KEY-----',
              b'-----BEGIN OPENSSH PRIVATE KEY-----')
 PUBLIC_SYSTEM_PATHS = (b'C:/Program Files/OpenSSL', b'C:/Program Files/Common Files/SSL')
@@ -50,7 +51,9 @@ def safe_name(name):
 
 def clean_bytes(data, label, forbidden_paths):
     # CodeView/字符串池同样检查；不能只移除 PDB 后宣称无构建机路径。
-    for view in (data, data[::2] if b'\x00' in data else b'', data[1::2] if b'\x00' in data else b''):
+    views = [data]
+    views.extend(match.group().decode('utf-16le').encode() for match in UTF16_ASCII.finditer(data))
+    for view in views:
         if any(value and value in view for value in forbidden_paths):
             raise ValueError('original private prefix in selected payload: ' + label)
         # OpenSSL's standard public runtime search locations are not build paths.
@@ -58,9 +61,18 @@ def clean_bytes(data, label, forbidden_paths):
             view = view.replace(prefix, b'<system-openssl>').replace(prefix.replace(b'/', b'\\'), b'<system-openssl>')
         # These public guide examples deliberately use a generic placeholder;
         # never apply this exception to binaries, metadata or arbitrary files.
-        if label in ('share/TansrSDK/doc/guide.md', 'share/TansrSDK/doc/使用指南.md'):
+        if label in ('share/TansrSDK/doc/guide.md', 'share/TansrSDK/doc/使用指南.md',
+                     'share/TansrSDK/packaging/README.md'):
             view = view.replace(b'C:/absolute/', b'<absolute-path>/')
-        if BAD_PATH.search(view) or any(value in view for value in FORBIDDEN):
+        paths = []
+        for match in BAD_PATH.finditer(view):
+            try:
+                candidate = match.group().decode('utf-8')
+            except UnicodeDecodeError:
+                continue
+            if candidate.isprintable():
+                paths.append(candidate)
+        if paths or any(value in view for value in FORBIDDEN):
             raise ValueError('private path or key marker in selected payload: ' + label)
 
 

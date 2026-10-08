@@ -54,7 +54,7 @@ python tools/package_release.py --install-prefix out/release-install --dependenc
 
 每个包有 `manifest.json`、`SHA256SUMS`、`USAGE.txt`。清单覆盖全部载荷文件的相对路径、字节数、SHA256、可执行位，以及来源、ABI、依赖源码版本/hash、依赖锁原始字节 hash。清单与校验表自身不递归计入载荷表；它们所在归档的 hash 另见输出根 `SHA256SUMS`。工具写完后重读归档并比较全部载荷，才记 `prepared`。
 
-工具仅收集明确的安装目录和文件，拒绝符号链接/reparse point、路径穿越、大小异常、大小写重名、未知目标和不匹配的锁；不会打入测试、私有 fixture、凭据、内部合同、PDB 或开发仓历史。文本和二进制都检查内部绝对路径与私钥标记。指南中明确的 `C:/absolute/` 示例占位只对两份指南放行，不对二进制放行。OpenSSL 标准系统运行目录 `C:/Program Files/OpenSSL` 和 `C:/Program Files/Common Files/SSL` 可保留，它们不是构建机私有路径。
+工具仅收集明确的安装目录和文件，拒绝符号链接/reparse point、路径穿越、大小异常、大小写重名、未知目标和不匹配的锁；不会打入测试、私有 fixture、凭据、内部合同、PDB 或开发仓历史。文本和二进制都检查内部绝对路径与私钥标记。明确的 `C:/absolute/` 示例占位只对两份指南及 `packaging/README.md` 放行，不对二进制放行；这些文档中的其他私有路径仍会拒绝。OpenSSL 标准系统运行目录 `C:/Program Files/OpenSSL` 和 `C:/Program Files/Common Files/SSL` 可保留，它们不是构建机私有路径。
 
 curl 的 CMake 兼容链接列表可能含原依赖前缀。工具只把**完全匹配该输入前缀**的文本替换成该 CMake 目录的相对路径，记录变换前后 hash；任何其他路径残留仍失败。二进制内的 `__FILE__`、CodeView、调试或运行期路径不做盲目字节替换，应从发行构建的路径映射、调试配置及依赖安装配置修正后重新准备。
 

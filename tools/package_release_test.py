@@ -118,7 +118,7 @@ class ReleaseTests(unittest.TestCase):
                     release.metadata(invalid)
 
     def test_payload_rejects_private_paths_and_keys_including_utf16(self):
-        for content in (b'J:\\tansr\\private\\source.cpp', b'/Users/private/source.cpp',
+        for content in (b'J:\\tansr\\private\\source.cpp', b'J:\\\\tansr\\\\private\\\\source.cpp', b'/Users/private/source.cpp',
                         'J:/tansr/private.cpp'.encode('utf-16le'), b'-----BEGIN PRIVATE KEY-----'):
             with self.subTest(content=content):
                 with self.assertRaises(ValueError):
@@ -138,6 +138,40 @@ class ReleaseTests(unittest.TestCase):
         payload.put('A.hpp', b'')
         with self.assertRaises(ValueError):
             payload.put('a.hpp', b'')
+
+    def test_real_packaging_readme_placeholder_only_in_document(self):
+        actual = (release.ROOT / 'packaging/README.md').read_bytes()
+        self.assertIn(b'C:/absolute/', actual)
+        payload = release.Payload([])
+        payload.put('share/TansrSDK/packaging/README.md', actual)
+        with self.assertRaises(ValueError):
+            payload.put('bin/demo.exe', actual)
+        with self.assertRaises(ValueError):
+            release.Payload([]).put('share/TansrSDK/packaging/README.md', actual + b'\nJ:/tansr/private/source.cpp')
+
+    def test_all_real_installed_documents_and_relative_scope_are_allowed(self):
+        payload = release.Payload([])
+        for name in ('LICENSE', 'README.md', 'README.en.md', 'doc/使用指南.md', 'doc/guide.md',
+                     'packaging/NOTICE.md', 'packaging/RIGHTS.txt', 'packaging/dependencies.json', 'packaging/README.md'):
+            payload.read(release.ROOT / name, 'share/TansrSDK/' + name)
+        for name in release.LICENSES:
+            payload.read(release.ROOT / 'packaging/licenses' / name, 'share/TansrSDK/packaging/licenses/' + name)
+        release.Payload([]).put('scope.txt', b'user/app/workspace/tool')
+        for actual in (b'/workspace/private/file', b'file=/workspace/private/file', b'\0/home/user/private/file'):
+            with self.subTest(path=actual), self.assertRaises(ValueError):
+                release.Payload([]).put('binary.lib', actual)
+
+    def test_binary_url_formats_and_non_utf16_bytes_are_not_private_paths(self):
+        payload = release.Payload([])
+        payload.put('curl.lib', b'\0%s://%s\0%s://%s:%s/%s\0')
+        # Bytes from different machine-code positions must not be interpreted as UTF-16.
+        payload.put('crypto.lib', b'\x81I\x82:\x83/\x84a\x85b\x86c\x87d')
+        payload.put('machine-code.lib', b'T:\\\xbeW\xa65;\x0c\xd4\0X:/?\x13_random\0')
+        with self.assertRaises(ValueError):
+            release.Payload([]).put('unicode-path.lib', 'J:/私有/private.cpp'.encode())
+        for text in ('J:/tansr/private.cpp', '/Users/private/build/file.cpp'):
+            with self.subTest(text=text), self.assertRaises(ValueError):
+                release.Payload([]).put('real-utf16.lib', b'\x81' + text.encode('utf-16le') + b'\0\0')
 
     def test_failed_input_preserves_failure_receipt_and_does_not_overwrite(self):
         meta = self.fixture()

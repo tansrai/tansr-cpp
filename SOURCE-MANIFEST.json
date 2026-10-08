@@ -357,8 +357,8 @@
     },
     {
       "path": "packaging/RELEASE.md",
-      "bytes": 6151,
-      "sha256": "155b2486364f75cea2a474f2fa1d2a22a2e4e824dcce906d0a0eff94e1ced851"
+      "bytes": 6219,
+      "sha256": "99ef3000c83ec35d517883993873946054527d39dbd3be368a829ab59a14908d"
     },
     {
       "path": "packaging/RIGHTS.txt",
@@ -682,8 +682,8 @@
     },
     {
       "path": "tests/session_test.cpp",
-      "bytes": 19281,
-      "sha256": "54a6f104b24e4c56fb3bc944af3bad2b681489746c9161751880a09d6ca8f78a"
+      "bytes": 19228,
+      "sha256": "52162803e5cb89b4e6a85538ade0686b24591f57fd6e434d7a2bad1bf362b084"
     },
     {
       "path": "tests/sse_test.cpp",
@@ -752,13 +752,13 @@
     },
     {
       "path": "tools/package_release.py",
-      "bytes": 18506,
-      "sha256": "e1ee9ea71c5aa5197b1849f3251220b07f09dbb01fa1410a94adf12648daea96"
+      "bytes": 18953,
+      "sha256": "fef08aa06d072475a2a74f7a5525fea3f37b26ecdf3a67e879f757920abfc0ab"
     },
     {
       "path": "tools/package_release_test.py",
-      "bytes": 9307,
-      "sha256": "83f2d3397208f5f1ab860baa53ab70186f52dba560eb9b2b9c09b8104e33b55c"
+      "bytes": 11606,
+      "sha256": "083c29d707ea8775501314655fb5de537b37b8fb3bcb46f19862206dbe124b7e"
     },
     {
       "path": "tools/prepare_dependencies.py",

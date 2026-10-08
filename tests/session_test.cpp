@@ -51,8 +51,7 @@ HttpResponse metadata(std::string family = "sdk1") {
     return reply(200, std::move(json));
 }
 HttpResponse closure(std::string state = "enabled") {
-    const auto path = std::filesystem::path(__FILE__).parent_path().parent_path() / "contract" /
-                      "unified-v1.schema.json";
+    const auto path = std::filesystem::path(TANSR_CONTRACT_DIR) / "unified-v1.schema.json";
     std::ifstream file(path, std::ios::binary);
     require(static_cast<bool>(file), "frozen schema unavailable");
     std::string bytes((std::istreambuf_iterator<char>(file)), {});
