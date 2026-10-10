@@ -148,7 +148,7 @@ void public_facts(mp::Options target) {
 int main() {
     std::filesystem::path root;
     try {
-        root = std::filesystem::temp_directory_path() /
+        root = std::filesystem::canonical(std::filesystem::temp_directory_path()) /
                ("tansr-migration-" +
                 take(crypto::sha256_hex(
                          std::to_string(unix_time_ms()) +

@@ -335,7 +335,7 @@ int main(int argc, char **argv) {
                           "terminal-persistence-v1", vector.at("definition").as_string(),
                           vector.at("value"))) == (std::string(kind) == "positive"),
                       vector.at("id").as_string().c_str());
-        dir = std::filesystem::temp_directory_path() /
+        dir = std::filesystem::canonical(std::filesystem::temp_directory_path()) /
               ("tansr-pst-v1-" +
                hash(std::to_string(std::chrono::steady_clock::now().time_since_epoch().count()))
                    .substr(0, 12));

@@ -757,13 +757,13 @@
     },
     {
       "path": "tests/memory_publication_migration_test.cpp",
-      "bytes": 18989,
-      "sha256": "d6647f702f7ace8ff659fa475fa6bf524810867211b334226067140194b7dd56"
+      "bytes": 19017,
+      "sha256": "679276da2a88f7f7cdec86bcef30fb065732195339d3c16612d7ab5f8d53348a"
     },
     {
       "path": "tests/memory_publication_test.cpp",
-      "bytes": 19598,
-      "sha256": "7612d09c86aec80d418c32b6ce47bc5efc44fd47994146accb2cb7e3b0ea5eba"
+      "bytes": 19626,
+      "sha256": "2723eda90b914b33b350981231255f0d2b0e672399b116b8939fd0b9e9454555"
     },
     {
       "path": "tests/runtime_test.cpp",
@@ -792,8 +792,8 @@
     },
     {
       "path": "tests/terminal_persistence_test.cpp",
-      "bytes": 48053,
-      "sha256": "60603929b18aa81a2efa8ffb6718430acf5499f29f0e8cdf7e119f205e7df98e"
+      "bytes": 48081,
+      "sha256": "37059003b44865f8335958ade3e286282228e222ebf25956626521dedddc12ff"
     },
     {
       "path": "tests/tls_test.cpp",

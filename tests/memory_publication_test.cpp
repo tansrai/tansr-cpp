@@ -100,7 +100,7 @@ int main() {
     std::filesystem::path root;
     try {
         root =
-            std::filesystem::temp_directory_path() /
+            std::filesystem::canonical(std::filesystem::temp_directory_path()) /
             ("tansr-pst-cpp-" +
              take(
                  crypto::sha256_hex(
