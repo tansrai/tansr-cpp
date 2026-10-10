@@ -142,7 +142,7 @@ struct Runner::Impl {
             return valid.error();
         if (op.request.operation != "tool.invoke")
             return detail::invalid("unsupported resource operation");
-        auto tool = options.tools.find(op.tool_name);
+        auto tool = options.tools.find(op.request.args.at("name").as_string());
         if (tool == options.tools.end())
             return detail::invalid("tool not installed");
         const auto *declared = op.request.args.find("definitionDigest");
@@ -291,7 +291,7 @@ struct Runner::Impl {
                 try {
                     ToolResult result = ToolFailure::unknown("handler exception");
                     try {
-                        result = handler(ToolContext{cancel, output}, std::move(args));
+                        result = handler(ToolContext{cancel, output, op}, std::move(args));
                     } catch (...) {
                         result = ToolFailure::unknown("handler exception");
                     }

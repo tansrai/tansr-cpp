@@ -104,6 +104,7 @@ tansr::session::WriteOptions write_options(tansr::CancellationToken);
 tansr::CallOptions call_options(tansr::CancellationToken,
                                 std::optional<std::int64_t> deadline = {});
 tansr::crypto::Aes256Key archive_key();
+tansr::crypto::Aes256Key archive_key(const char *environment_name);
 
 // 可取消的控制台/管道输入，不遗留 detached stdin 线程。
 class Console {

@@ -4,7 +4,9 @@
 #include <tansr/canonical.hpp>
 #include <tansr/crypto.hpp>
 #include <tansr/executor.hpp>
+#include <tansr/memory_publication.hpp>
 #include <tansr/session.hpp>
+#include <tansr/terminal_persistence.hpp>
 
 // 独立安装树消费：仅包含公共头和公开 target，不引用 src 或内部合同。
 int main() {
@@ -15,6 +17,14 @@ int main() {
     if (!digest ||
         digest.value() != "ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad")
         return 2;
+    if (tansr::memory_publication::create_host({}))
+        return 5;
+    if (tansr::memory_publication::FileStore::migrate({}, {}))
+        return 6;
+    if (tansr::terminal_persistence::create_host({}))
+        return 7;
+    if (tansr::terminal_persistence::FileStore::migrate({}, {}))
+        return 8;
     auto runtime = tansr::Runtime::create();
     if (!runtime)
         return 3;

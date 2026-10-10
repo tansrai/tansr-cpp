@@ -94,8 +94,10 @@ void junction(const std::filesystem::path &link, const std::filesystem::path &ta
     const auto set =
         DeviceIoControl(handle, FSCTL_SET_REPARSE_POINT, buffer.data(),
                         static_cast<DWORD>(buffer.size()), nullptr, 0, &returned, nullptr);
+    const auto error = set ? ERROR_SUCCESS : GetLastError();
     CloseHandle(handle);
-    check(set != 0, "set real junction");
+    if (!set)
+        throw std::runtime_error("set real junction Win32=" + std::to_string(error));
 }
 #else
 bool child_lock(const std::filesystem::path &program, const std::filesystem::path &root) {

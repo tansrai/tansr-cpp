@@ -1,0 +1,12 @@
+{
+  "format": "tansr-cpp-profile-lock-v1",
+  "profile": "terminal-persistence-v1",
+  "revision": "2026-10-10.v1",
+  "rfcSha256": "d7310cdaf0cd34d0b9fb2664e6d679422cfcebd7b6f930c5c03d15d42b6fc8bf",
+  "toolName": "TansrTerminalPersistenceV1",
+  "definitionDigest": "33029a264edf81f3fda2a13fc382403d0cd7ffefa1f38088bb9366f387a13587",
+  "files": {
+    "terminal-persistence-v1.golden.json": "4b2c492ae590fda9447a5a53d13f3f7a935956c929cc23441a765947e3ef6503",
+    "terminal-persistence-v1.schema.json": "47387fb03308d00244e876a3bb429e24b81ac8d94d5f611aeda43e03b7c8b16c"
+  }
+}

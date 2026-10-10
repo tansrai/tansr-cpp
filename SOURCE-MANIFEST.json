@@ -37,8 +37,8 @@
     },
     {
       "path": "CMakeLists.txt",
-      "bytes": 6562,
-      "sha256": "736ab6b70f22fd2d75453a21e6a46297a0331cd57e7f4650c1e605a7feffe9c6"
+      "bytes": 6956,
+      "sha256": "4ab2c455550f4ffdd5d2a227938c8e375eb8065798f89b3703f02926fa2181cf"
     },
     {
       "path": "CMakePresets.json",
@@ -57,13 +57,13 @@
     },
     {
       "path": "README.en.md",
-      "bytes": 8504,
-      "sha256": "2dc14910b84668d9a803fe16455de08052fe768cbc3dcd4cc291c686df2b03fb"
+      "bytes": 9258,
+      "sha256": "c67b99926c4a474eedd6c36a8b6e1e02706d9371f54d19ef0a188470aa487790"
     },
     {
       "path": "README.md",
-      "bytes": 7744,
-      "sha256": "aa83d8d5f29c545b56e5772abf9aa486aa9728f1b99055395d31808e0e4f5dd6"
+      "bytes": 8363,
+      "sha256": "aa9439e9346c8e58b13df40fb7fbb4ee6262f4a95d21543bb86a2b6c13d3bf9d"
     },
     {
       "path": "cmake/TansrSDKConfig.cmake.in",
@@ -197,8 +197,8 @@
     },
     {
       "path": "demo/CMakeLists.txt",
-      "bytes": 614,
-      "sha256": "2b2d2cc8a49880c7601d6c05157d23922e87b7635728367d72fec0a6d6daf1b9"
+      "bytes": 621,
+      "sha256": "eab89b1f35d51ff7ca1a5c5d85a16fb530e5ea9afbfa2e521631a11c80a6282c"
     },
     {
       "path": "demo/archive.cpp",
@@ -212,13 +212,23 @@
     },
     {
       "path": "demo/common.cpp",
-      "bytes": 19339,
-      "sha256": "9f2de3cd31afa58df9a0d38ec8c7c426d155886c005968b9121a2ccc6a386017"
+      "bytes": 19481,
+      "sha256": "aa5c312ab33ac90d0e2597906410e8a7af7f979e4153ba6680338970cce0bb16"
     },
     {
       "path": "demo/common.hpp",
-      "bytes": 3878,
-      "sha256": "d7ca2cedcd8cc9f7b2d67747acb98e1125b3531aa1a2426e67688cf9394d80c7"
+      "bytes": 3946,
+      "sha256": "55fc3a27f75637170e0b754c522eaf4f920b6e7e02c8f22afcde6b3a40f46679"
+    },
+    {
+      "path": "demo/memory.cpp",
+      "bytes": 10624,
+      "sha256": "9c1f4e6535afd72daf3bd2a634c44a848a1fc8913da46fff2f4088736235326e"
+    },
+    {
+      "path": "demo/memory_binding.hpp",
+      "bytes": 3926,
+      "sha256": "ea49f31e3b5a9fe31599654b78539b4836aedabf46d3e9d50b19e5e14c8ccd1e"
     },
     {
       "path": "demo/tools.cpp",
@@ -227,13 +237,13 @@
     },
     {
       "path": "doc/guide.md",
-      "bytes": 28264,
-      "sha256": "017ae89fc35fea552e5c41c462fa9f56b719b8013106b9e31916a181ef25a09c"
+      "bytes": 47996,
+      "sha256": "eef47e6f589df340b4077c7fc4621d1d0e83e785a340dd1058023c153ab5a56c"
     },
     {
       "path": "doc/使用指南.md",
-      "bytes": 24024,
-      "sha256": "6ae7bcc57c8024b4166bb632f66a929d90f28a902367421697c8069c7b1f29ad"
+      "bytes": 42278,
+      "sha256": "40882bfc2afc2a056cb94da46d3d323cdc549de375b2ca747604e676d758a8a7"
     },
     {
       "path": "include/tansr/api.hpp",
@@ -261,14 +271,19 @@
       "sha256": "58496d0294d86fdf835009af18ff3a0b0d9b5d59bd1a3466dfc329e74f016ae8"
     },
     {
+      "path": "include/tansr/detail/terminal_persistence_digest.inc",
+      "bytes": 111,
+      "sha256": "052ae1aa73e26ccb7c50ff842306c2477fc2a999ec5b437e4cec82b8da04b4af"
+    },
+    {
       "path": "include/tansr/error.hpp",
       "bytes": 2744,
       "sha256": "c8cf5541982cde7643ade678c96c2db55b30c80f0dfd9ef0c31ef2a540667b0f"
     },
     {
       "path": "include/tansr/executor.hpp",
-      "bytes": 10685,
-      "sha256": "cb69107877bd9c02a7efcff62b97b6b154cb0b338731b1bf41165032fb7c077e"
+      "bytes": 10822,
+      "sha256": "40a8d613c2a524e836a7d6c529bdf4c0c715dca2a62a8508e58257389857cdd8"
     },
     {
       "path": "include/tansr/export.hpp",
@@ -279,6 +294,11 @@
       "path": "include/tansr/json.hpp",
       "bytes": 3634,
       "sha256": "4f08f1f131ce58eee826f39a5fbc11b9dd603c7cbababc6407af0983291ffa76"
+    },
+    {
+      "path": "include/tansr/memory_publication.hpp",
+      "bytes": 3810,
+      "sha256": "d1030bba973c0ab70199485cd82fcabc449ee8ba72b23b7e5ece392b278822c7"
     },
     {
       "path": "include/tansr/operations.hpp",
@@ -292,8 +312,8 @@
     },
     {
       "path": "include/tansr/sdk.hpp",
-      "bytes": 206,
-      "sha256": "4435e193e60f0151a6ed91fa56c7dde990b225ad03121875b51a1d534d3448c7"
+      "bytes": 289,
+      "sha256": "3f964766b6bfad540191a767466884581df5a53e30565909171b5c2ed8634364"
     },
     {
       "path": "include/tansr/session.hpp",
@@ -311,9 +331,19 @@
       "sha256": "be1934bee0dc72f67f1bbdfd8cf0b08b6075ed26285dea4d7ee036156abcbe92"
     },
     {
+      "path": "include/tansr/terminal_persistence.hpp",
+      "bytes": 3462,
+      "sha256": "577398f4fd8d9ccb89089376b986050266589980bc8d082b4ce31cfd78ce350a"
+    },
+    {
       "path": "integration/demo_chat_controls.py",
       "bytes": 8462,
       "sha256": "adbea190729980e9d60803a2e5f73b6cfe401da5caf701343c4724cab4f46928"
+    },
+    {
+      "path": "integration/demo_console.py",
+      "bytes": 1114,
+      "sha256": "6d5c595d7e09d38ca9cc36168539c1e1b878edb37707d69cfddc88d3fda47d7a"
     },
     {
       "path": "integration/demo_create_loss.py",
@@ -334,6 +364,11 @@
       "path": "integration/network.py",
       "bytes": 6647,
       "sha256": "3f2e1de5873ac06d24ab3df9865bb8b09164774bbf669bf86bb2c5dbc62eb8ec"
+    },
+    {
+      "path": "integration/publication.py",
+      "bytes": 28262,
+      "sha256": "02971ad4376fd56517375e17a810801f0227788d9ce4506fa7e7cdfbc83f3b2b"
     },
     {
       "path": "integration/run.py",
@@ -441,6 +476,21 @@
       "sha256": "e21dfac111e5fab3843aedc68aa81e66a881afcea7c1adbf56c7cbfe37190965"
     },
     {
+      "path": "profiles/terminal-persistence-v1/LOCK.json",
+      "bytes": 571,
+      "sha256": "b66f57485b829574ea6c589ebaeb5d3811c0c452a06c327196dc9b46542301e3"
+    },
+    {
+      "path": "profiles/terminal-persistence-v1/terminal-persistence-v1.golden.json",
+      "bytes": 135472,
+      "sha256": "4b2c492ae590fda9447a5a53d13f3f7a935956c929cc23441a765947e3ef6503"
+    },
+    {
+      "path": "profiles/terminal-persistence-v1/terminal-persistence-v1.schema.json",
+      "bytes": 38585,
+      "sha256": "47387fb03308d00244e876a3bb429e24b81ac8d94d5f611aeda43e03b7c8b16c"
+    },
+    {
       "path": "src/api/client.cpp",
       "bytes": 39675,
       "sha256": "f4799139a2cf48c0029fef02787e2b5e14d8ef373e074e6d65ec0941d00cd159"
@@ -452,13 +502,13 @@
     },
     {
       "path": "src/api/schema.cpp",
-      "bytes": 29626,
-      "sha256": "362a08d065a5c08e1e01543c3364dece6338589a7eaaf5a5e89d2e313de8c0a6"
+      "bytes": 30091,
+      "sha256": "ebdcf2cff3830a6c5f0a3ec0715a59d5734974dcba45dba05a1147b12a684ad4"
     },
     {
       "path": "src/api/schema_data.inc",
-      "bytes": 427365,
-      "sha256": "895933a5ec2885cef60d8547cc765141ceb358eaa0b7ee24242d8ba6f9c66e03"
+      "bytes": 467392,
+      "sha256": "dd7284d0c1308432af7bea6605f5dfa5eea02826fba66d5e36efd9340370ad82"
     },
     {
       "path": "src/archive/client.cpp",
@@ -527,8 +577,8 @@
     },
     {
       "path": "src/executor/runner.cpp",
-      "bytes": 25954,
-      "sha256": "03b85d0358c6ebfb3c365a4447f6dc3a82cdb6f3df5d5f7fcef9aa7256d92d5e"
+      "bytes": 25984,
+      "sha256": "4bd5b66e57374527625b0882ed3d76beb6cb86c227ff46ed97029fdd98a140ce"
     },
     {
       "path": "src/executor/tool.cpp",
@@ -537,13 +587,18 @@
     },
     {
       "path": "src/executor/types.cpp",
-      "bytes": 18476,
-      "sha256": "35cb8c6de13952b944d06ab792a826f218f41a56ac2b22caf138cc2510bbe66f"
+      "bytes": 19728,
+      "sha256": "e3786b712bbf0187758c30d9a63dedfddf643c2b59d21dff8f8414f15e4673ea"
     },
     {
       "path": "src/json.cpp",
       "bytes": 21692,
       "sha256": "90b28ec8f73a80273829911d3172c8ecafbff4a0cd363f6deddaa6a309223e24"
+    },
+    {
+      "path": "src/memory_publication.cpp",
+      "bytes": 36626,
+      "sha256": "95ac307d336446353d3dde9f4a1f4440fc7d7ae1503d80c1a78f601cb754ebf2"
     },
     {
       "path": "src/runtime.cpp",
@@ -579,6 +634,16 @@
       "path": "src/storage/private_directory.cpp",
       "bytes": 25400,
       "sha256": "b35851c267168e48f582f5eecbc414632d18395c6ad4ab641e317d5e6038063f"
+    },
+    {
+      "path": "src/terminal_persistence.cpp",
+      "bytes": 35841,
+      "sha256": "05456fe9e286cfa0129c50607d045b702c62490a2b27c5f8db63f2fd312f4cf1"
+    },
+    {
+      "path": "src/terminal_persistence_state.inc",
+      "bytes": 41020,
+      "sha256": "e91772d7eebd41c8f92228c5b45e0d82f9c9a3df831828e92686d2e7f16adb80"
     },
     {
       "path": "src/time.hpp",
@@ -622,8 +687,8 @@
     },
     {
       "path": "tests/consumer/main.cpp",
-      "bytes": 995,
-      "sha256": "ae51620055aa6cca51b20469f4687f501e1a5daa7b582674acdd367a35e8a6be"
+      "bytes": 1383,
+      "sha256": "a420aacc5315021597d615cff4a8af326ae8751889080466e39a65af49c6f233"
     },
     {
       "path": "tests/contract_test.cpp",
@@ -637,8 +702,8 @@
     },
     {
       "path": "tests/executor_test.cpp",
-      "bytes": 50254,
-      "sha256": "ebf9902d1b5392478ec408f807f38b7466cd22bfcdbc5dd6db98d8b61272d067"
+      "bytes": 53233,
+      "sha256": "7598232c1f05a7244a9455f72703f27205934079d6f092d3cc2f956447a83a5d"
     },
     {
       "path": "tests/integration/archive.cpp",
@@ -666,6 +731,16 @@
       "sha256": "d9cdad5b44e68382276a58bd5e44599dccb895189eb9a8a5a4aa956fd83ae370"
     },
     {
+      "path": "tests/integration/persistence.inc",
+      "bytes": 14505,
+      "sha256": "dc3a009b3d34b447b41fa5feab1280597dc44d04e911d772970b87b166090a32"
+    },
+    {
+      "path": "tests/integration/publication.cpp",
+      "bytes": 36143,
+      "sha256": "054ca35ad98c3aae995bd16741c7f1ddff8b1baeeded36078020f96c02a1ed2d"
+    },
+    {
       "path": "tests/integration/session.cpp",
       "bytes": 64287,
       "sha256": "1633e49310734e8a3aefe4c6f954bf8e396847942308621f2bf0485f6621dd57"
@@ -674,6 +749,21 @@
       "path": "tests/json_test.cpp",
       "bytes": 8786,
       "sha256": "9d63f8b31a46420ec1fb218b90c7e3fdb88c3408ecb1e0205b33c1f2f58e056b"
+    },
+    {
+      "path": "tests/memory_binding_test.cpp",
+      "bytes": 5126,
+      "sha256": "11841254417c6f793ee1586ef1ff5390f64c2af2902512b19fdc4b8931443954"
+    },
+    {
+      "path": "tests/memory_publication_migration_test.cpp",
+      "bytes": 18989,
+      "sha256": "d6647f702f7ace8ff659fa475fa6bf524810867211b334226067140194b7dd56"
+    },
+    {
+      "path": "tests/memory_publication_test.cpp",
+      "bytes": 19598,
+      "sha256": "7612d09c86aec80d418c32b6ce47bc5efc44fd47994146accb2cb7e3b0ea5eba"
     },
     {
       "path": "tests/runtime_test.cpp",
@@ -697,8 +787,13 @@
     },
     {
       "path": "tests/storage_test.cpp",
-      "bytes": 10312,
-      "sha256": "4d0a1b648c8dd46c0dfa74829a98b0d3c1853c0a96c6e1fb3971a6b6a8874c6a"
+      "bytes": 10431,
+      "sha256": "5f8fdca56f92ec8d9d3715c0c79db968c93fa14f3b8370bafbed2ae391e5d922"
+    },
+    {
+      "path": "tests/terminal_persistence_test.cpp",
+      "bytes": 48053,
+      "sha256": "60603929b18aa81a2efa8ffb6718430acf5499f29f0e8cdf7e119f205e7df98e"
     },
     {
       "path": "tests/tls_test.cpp",
@@ -727,8 +822,8 @@
     },
     {
       "path": "tools/contract_check_test.py",
-      "bytes": 9693,
-      "sha256": "7d8d356937872ab9ce9d3deecbf3db800ce7d2ea88e745cadf52b41ecb32657f"
+      "bytes": 9798,
+      "sha256": "9589da041cc0dcb0236121350fab64aebce981814dcf6b6fe25ccbb5d498f909"
     },
     {
       "path": "tools/contract_export.py",
@@ -737,8 +832,8 @@
     },
     {
       "path": "tools/export_source.py",
-      "bytes": 11315,
-      "sha256": "b30bdf9d878cf3e817a3f68843d36e505748f9bf6b098db7f842b811758972e1"
+      "bytes": 12156,
+      "sha256": "af1257d4ce0d50b35a28f13cec2da322698057ae46f6b3f0a5d1f14bf96b7fef"
     },
     {
       "path": "tools/export_source_test.py",
@@ -747,8 +842,8 @@
     },
     {
       "path": "tools/generate_api.py",
-      "bytes": 4490,
-      "sha256": "67d3e1657d16410aede449f62139c946023438d1d58b5d5c9cf854fea5bb35e9"
+      "bytes": 5700,
+      "sha256": "61513e2822b8089238a979d49a04b2a44f4f506615a3f6b373533edee9297975"
     },
     {
       "path": "tools/package_release.py",

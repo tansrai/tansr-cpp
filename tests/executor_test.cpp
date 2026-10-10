@@ -6,10 +6,13 @@
 #include <atomic>
 #include <condition_variable>
 #include <cstdlib>
+#include <ctime>
 #include <filesystem>
 #include <fstream>
+#include <iomanip>
 #include <iostream>
 #include <mutex>
+#include <sstream>
 #include <stdexcept>
 #include <thread>
 
@@ -966,6 +969,55 @@ void early_output_and_renewal() {
     cancel.join();
     check(!result && first_before_return && f->heartbeats >= 1, "no early output or renewal");
 }
+// direct execute 不拥有外部 heartbeat 的更新；串行消费者须把新 lease 交给新 Runner。
+void direct_execute_renewed_connection() {
+    for (const bool use_renewed : {false, true}) {
+        auto f = std::make_shared<Fixture>();
+        auto j = std::make_shared<MemoryJournal>();
+        auto client = take(ex::Client::create(api(f), scope()));
+        auto original = connection();
+        const auto expiry_ms = unix_time_ms() + 600;
+        const auto seconds = static_cast<std::time_t>(expiry_ms / 1000);
+        std::tm calendar{};
+#ifdef _WIN32
+        check(gmtime_s(&calendar, &seconds) == 0, "UTC fixture conversion");
+#else
+        check(gmtime_r(&seconds, &calendar) != nullptr, "UTC fixture conversion");
+#endif
+        std::ostringstream timestamp;
+        timestamp << std::put_time(&calendar, "%Y-%m-%dT%H:%M:%S") << '.' << std::setfill('0')
+                  << std::setw(3) << expiry_ms % 1000 << 'Z';
+        original.expires_at = timestamp.str();
+        const auto renewed = take(client->heartbeat(original));
+        check(renewed.executor_id == original.executor_id &&
+                  renewed.connection_id == original.connection_id &&
+                  renewed.connection_revision == original.connection_revision &&
+                  renewed.expires_at != original.expires_at,
+              "heartbeat must renew the exact original connection");
+        std::atomic<int> effects{0};
+        auto handler = [&](ex::ToolContext context, Json) -> ex::ToolResult {
+            ++effects; // 模拟 publication 已写入、返回前跨过原 lease。
+            if (context.cancellation.wait_for(std::chrono::milliseconds(850)))
+                return ex::ToolFailure::unknown("original lease expired after durable effect");
+            return okay();
+        };
+        auto active =
+            runner(f, j, handler, false, {}, registration(), use_renewed ? renewed : original);
+        const auto digest = f->op.digest;
+        const auto receipt = take(active->execute(f->op));
+        check(receipt.status == (use_renewed ? "completed" : "unknown") && effects == 1 &&
+                  receipt.digest == digest && receipt.operation_id == f->op.operation_id &&
+                  j->result && j->result->status == receipt.status,
+              "direct execute did not preserve the lease-bound durable fact");
+        active.reset();
+        active = runner(f, j, handler, false, {}, registration(), renewed);
+        const auto replay = take(active->execute(f->op));
+        check(ex::to_json(replay).dump() == ex::to_json(receipt).dump() && effects == 1,
+              "renewal changed original permanent receipt or repeated the effect");
+        check(f->heartbeats == 1 && f->op.digest == digest,
+              "direct execution silently renewed or replaced the original operation");
+    }
+}
 int journal_process(const std::string &phase, const std::filesystem::path &parent) {
     check(parent.is_absolute(), "process workspace must be absolute");
     check(bool(storage::create_private_directory(parent / "effects")), "effect directory");
@@ -1067,7 +1119,8 @@ int main(int argc, char **argv) {
             {"output_result_separation", output_result_separation},
             {"concurrent_output_and_cancel", concurrent_output_and_cancel},
             {"output_windows_and_recovery", output_windows_and_recovery},
-            {"early_output_and_renewal", early_output_and_renewal}};
+            {"early_output_and_renewal", early_output_and_renewal},
+            {"direct_execute_renewed_connection", direct_execute_renewed_connection}};
         std::size_t executed = 0;
         for (const auto &[name, execute] : groups) {
             if (argc == 3 && std::string(argv[1]) == "--group" && std::string(argv[2]) != name)

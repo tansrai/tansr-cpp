@@ -4,4 +4,7 @@
 #include "tansr/api.hpp"
 #include "tansr/archive.hpp"
 #include "tansr/executor.hpp"
+#include "tansr/memory_publication.hpp"
 #include "tansr/session.hpp"
+
+#include "tansr/terminal_persistence.hpp"

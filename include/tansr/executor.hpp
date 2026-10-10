@@ -222,6 +222,8 @@ class FileJournal final : public Journal {
 struct ToolContext {
     CancellationToken cancellation;
     std::shared_ptr<OutputWriter> output;
+    // 原操作拥有副本；旧两参数初始化仍可用，缺省不授予专用权限。
+    std::optional<Operation> operation{};
 };
 struct ToolFailure {
     enum class Kind { rejected, unknown } kind{Kind::unknown};

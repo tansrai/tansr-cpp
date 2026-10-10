@@ -69,3 +69,7 @@ cmake --install out/release --prefix /absolute/tansr-cpp-0.1.0
 Serve 须提供 UAPI revision 7 及所选 family 的实际能力；offload、终端工具输出和档案恢复还要求对应操作被 Serve 的能力声明与当前授权启用。SDK 的操作目录不替服务端开启能力，也不指定一个可绕过协商的最低 Serve 版本。
 
 公开合同为原冻结资产的明确 **20 文件**子集，按 `contract/DISTRIBUTION.json` 与导出策略核对；源码开发检查使用 `python tools/contract_check.py --mode public`。内部 39 文件的私有参考、Serve/kernel 源码及历史不在本次许可与分发范围内。第三方许可证见 [NOTICE](packaging/NOTICE.md)。首版不承诺任意 Shell/PTY、GUI、移动端、完整本地记忆编排或跨 SDK 私有存储互读。
+
+新增显式 `TansrTerminalPersistenceV1`：不透明双键永久回执、固定块差量与根/索引/transfer 原子提交，实际配额和整快照成本见[使用指南](doc/使用指南.md)。原 `tansr-memory` 默认六动作保持；新宿主使用 `--profile persistence-v1`，需要 Serve 显式选择。
+
+v1 主密文快照配套经认证的 `.writes` 计数，每次 GCM 尝试先耐久扣减再加密。须成对保留文件和原独占密钥，缺失或错误计数拒绝重开；显式迁移使用新密钥及存储身份。完整旧备份回滚仍需外部单调见证，具体恢复边界见指南。

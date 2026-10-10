@@ -1,4 +1,6 @@
 #include "internal.hpp"
+#include "tansr/memory_publication.hpp"
+#include "tansr/terminal_persistence.hpp"
 #include <cstdio>
 
 namespace tansr::executor {
@@ -71,11 +73,29 @@ Result<void> validate_operation(const Operation &op) {
     if (op.request.operation == "tool.invoke") {
         const auto *n = op.request.args.find("name");
         const auto *a = op.request.args.find("argsJson");
-        if (!n || !n->is_string() || n->as_string() != op.tool_name || !a || !a->is_string())
+        if (!n || !n->is_string() || !a || !a->is_string())
             return detail::invalid("substituted tool name or arguments");
         auto parsed = parse_tool_arguments(a->as_string());
         if (!parsed)
             return parsed.error();
+        if (n->as_string() == memory_publication::tool_name) {
+            const auto *d = op.request.args.find("definitionDigest");
+            if (op.tool_name != "MemoryPublication" || !d || !d->is_string() ||
+                d->as_string() != memory_publication::tool_digest || a->as_string().size() > 32768)
+                return detail::invalid("invalid memory publication profile");
+            return validate_wire("terminal-services-v1", "MemoryPublicationRequest",
+                                 parsed.value());
+        }
+        if (n->as_string() == terminal_persistence::tool_name) {
+            const auto *d = op.request.args.find("definitionDigest");
+            if (op.tool_name != "MemoryPublication" || !d || !d->is_string() ||
+                d->as_string() != terminal_persistence::tool_digest ||
+                a->as_string().size() > 32768)
+                return detail::invalid("invalid terminal persistence profile");
+            return validate_wire("terminal-persistence-v1", "Request", parsed.value());
+        }
+        if (n->as_string() != op.tool_name || op.tool_name == "MemoryPublication")
+            return detail::invalid("substituted tool name or arguments");
     }
     return {};
 }

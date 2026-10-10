@@ -269,3 +269,105 @@ Demos exit normally with `0` on success and `1` for failures they report. On std
 | Timeout, nonzero exit or an unconfirmed outcome | Retain the printed session ID, original intent, journal, archive and key. Follow sections 4–6 for attach, original-intent reconciliation or recover as appropriate. An exit code is not proof that a business operation never ran |
 
 Public-source development uses `python tools/contract_check.py --mode public` to verify the 20 original assets in the distribution declaration. The 39-file internal reference set and private history are not distributed. [Mainline CI](https://github.com/tansrai/tansr-cpp/actions) and the [v0.1.0 release record](https://github.com/tansrai/tansr-cpp/releases/tag/v0.1.0) are the entry points for validation and artifacts. Check the release record for native execution on three operating systems, real Serve and installed-package evidence with their limits. This guide or successful `--help` execution does not replace that evidence. See [NOTICE](../packaging/NOTICE.md) for third-party licenses.
+
+## Dedicated local MemoryPublication host (PST-05)
+
+`<tansr/memory_publication.hpp>` exposes the narrow `Store::execute(request, owner)` storage port for the frozen terminal-services-v1 head/read/begin/chunk/commit/query actions. The owner is the original execution scope/sessionId/binding. Serve and the trusted host retain authorization and memory decisions. Storage does not run models, extract memories, or change Archive, canonical encoding, digests, or ACK semantics. The original 4 MiB body and 12 KiB chunk bounds apply, with exact hashes, contiguous offsets, UTF-8 validation, original-transfer idempotency and persisted CAS conflict outcomes.
+
+Open `FileStore` with explicit create/reopen, an absolute private file path, identity, key ID, a provider returning the current 32-byte key, and a current scope provider. Create the parent through `storage::create_private_directory`. Create never overwrites; reopen never substitutes an empty domain for a missing original. The existing PrivateDirectory supplies the exclusive lock and atomic durable replacement. AES-256-GCM protects the body, staging, owner, transfer outcomes, and execution journal requests/results together; AAD binds format, identity and key ID. Wrong/missing keys, corruption and authorization changes fail closed and preserve the original. Use a dedicated key for each publication file, separate from Archive. The 2^20 encryption limit fails explicitly. Use the explicit new-path migration/key-rotation API below. Deleting receipts, resetting the file or restoring old backups is not a capacity or rotation workaround.
+
+`create_host({store, journal, authorize, true})` requires durable publication and encrypted Store/Journal declarations. FileStore implements both. Pass the returned tools **and** journal to the original ExecutorRunner. Custom implementations remain injectable; the plaintext executor FileJournal does not satisfy the publication host's encrypted journal interface. ToolContext carries an owned original operation; absence grants no dedicated authority. The authorizer checks current identity and binding before and after execution. Only the frozen MemoryPublication permission, TansrTerminalMemoryPublication tool name and definition digest select this profile. It is neither a model tool nor Shell.
+
+The built `tansr-memory` demo reuses the existing private credential/key-file facilities. In this process, `TANSR_ARCHIVE_KEY_FILE` must identify a **dedicated publication key**, never an existing Archive key. Configure a legitimate Source/domain and MemoryPublication permission in Serve, then attach an existing session:
+
+```sh
+tansr-memory --session EXISTING_SESSION --binding-request ORIGINAL_BINDING_REQUEST_ID --file /absolute/private-memory/publication.bin --key-id memory-key-1 --source SOURCE_ID --generation 1 --domain DOMAIN_ID --create
+# Reopen with the same identity, file and key; omit --create.
+```
+
+The demo registers the dedicated executor host, initializes without a model-tool declaration, binds it, then calls the original `terminal.binding.create` with required `memory-lifecycle-v1`. It validates the returned request ID, session, complete binding (including any interpreter), scope and accepted feature before printing ready. The generic execution effective-tools list is not a declaration of this auxiliary capability. The original Runner checks Serve execution status for each operation; the trusted host also rechecks current scope/session/binding. It drains Runner before closing storage and Runtime. It does not create replacement sessions, add a cloud index, or promise cloud access to device-only data while offline. Cross-owner queries are denied by default. An optional authorize_recovery callback must verify the original Serve recovery proof, revocation of the old authorization and current connection permission. The adapter additionally requires the same app/user/session/executor/workspace and only permits query, never ownership transfer for writes. The demo has no recovery-proof provider; do not substitute an unconditional true callback.
+
+Keep the original binding request ID **and complete original request body** for an uncertain binding result. A process restart that registers a new connection creates a different binding; do not replay that new body under the old request ID or invent a new ID to bypass an unknown result. This small demo does not persist a connection/binding recovery intent. A production controller must reconcile the original binding first; the existing encrypted operation/transfer records remain authoritative. Merely reopening the file does not grant a new owner permission to finish an old transfer.
+
+`capacity()` reports retained transfers, staging bytes, journal entries and remaining limits. Limits are bound to the file; outcomes and original keys are not silently expired. A failed replacement response or post-commit revocation yields unknown and requires close/reopen before reconciliation using the original transferId or operation journal. An only-claim record retains the existing Runner's unknown semantics. Back up a closed complete ciphertext file and preserve external key recovery. Old backups can lack replay witnesses and must not simply replace current authoritative storage. Application logs, RAM and swap are outside the encryption claim.
+
+Windows local evidence is recorded in the development ledger. `integration/publication.py` consumes a SHA256-pinned public-package Serve host, runs native C++ processes and the actual demo, and retains failed temporary directories. It does not count generic Archive tests as publication evidence. Linux/macOS and platform installable artifacts still require their own evidence.
+The dedicated real-Serve entry point requires the trusted host manifest and exact public package hashes; the host itself is not shipped with this SDK:
+
+```sh
+python integration/publication.py --manifest /absolute/shared-host.json --node /absolute/node --build /absolute/out/release --logs /absolute/new-evidence/native --suite native
+python integration/publication.py --manifest /absolute/shared-host.json --node /absolute/node --build /absolute/out/release --logs /absolute/new-evidence/demo --suite demo
+```
+
+The scenario defaults to `sdk1`. `--family sdk2-offload-v1` requires a Host that installs the original public offload family and publication configuration; using an SDK2 client alone does not install that session family. Do not bypass `capability_unavailable` / `not_installed` by changing headers, falling back to another family or inventing a Source. Before creating a new-family session, the consumer retains its original requestId, complete body and absolute deadline and refuses to overwrite an uncertain creation intent.
+
+The native scenario sends at most twelve synthetic Chinese pins and stops when an actually committed publication exceeds 12 KiB; otherwise it fails. After every three complete original transactions it gracefully closes and reopens the worker with the same medium and connection; each process retains its 360-second total budget. The original pin implementation clamps anchors to 240 characters, regardless of the 4096-character wire bound. Busy commands are retried with the same keys and body only after the original receipt query confirms no acceptance. The comparator checks one transfer ID, begin length/SHA, continuous chunk offsets/digests, and commit length/etag. Chunks from different transfers cannot establish continuation.
+
+After the first real chunk receipt is durable, the process exits and reopens the original encrypted medium, preserving connection, operation ID, digest, transfer and receipt. A separate injection drops an HTTP response only after Serve actually accepts the receipt; reconciliation does not reenter storage. After the original session closes and the trusted Host confirms settlement through its public handle, the Host explicitly selects reopen for the next source installation. The client resumes the same session, explicitly binds the same connection for this new session epoch, and verifies every actual read chunk and the full SHA. The new binding never replaces prior operation identities. Surviving leases are rejected; reopening does not clear unresolved commands. Claim-only permanent unknown is tested after cold reading. See the development ledger for actual candidate/platform results; this does not establish whole-Serve process restart, cross-owner takeover or Linux/macOS behavior.
+
+Hosts calling `Runner::execute` directly manage heartbeat themselves. A renewed connection returned by `Client::heartbeat` does not update an existing Runner. Expiry after a durable effect can still require a permanent unknown receipt. At a serial idle point, save the renewed expiry of the same connection and construct a Runner with it; `Runner::run` manages its own heartbeat. Never reset the journal or invent a replacement operation ID to bypass expiry.
+
+### Explicit migration and key rotation
+
+`FileStore::migrate(source, destination)` supports the existing encrypted `Tansr-Cpp-MemoryPublication/1` format. Stop the original Runner and close the Store first. The source must use `create=false`; the destination must use `create=true`, a nonexistent file in **another private directory**, and exactly the same app/user/sourceId/sourceGeneration/domainKey. Both directories are exclusively locked throughout the operation. Parent directories are not automatically created. Explicit capacity changes are permitted only if the complete original state fits before publication.
+
+Provide a **fresh key ID and an exclusive key never used for another store**. The actual 32 key bytes must also differ from the source. Renaming a key is rejected. Same-key copies are not supported because forked snapshot counters cannot establish total use of one key; the new key counter starts with the first complete snapshot encryption. Keep host-managed key providers stable; a failed migration never authorizes generating a replacement key and retrying automatically.
+
+```cpp
+auto source = current_options; // Real current-scope and key callbacks.
+source.create = false;
+auto destination = source;
+destination.path = new_private_directory / "publication.bin";
+destination.create = true;
+destination.key_id = fresh_key_id;
+destination.read_key = read_fresh_exclusive_key;
+auto made = tansr::storage::create_private_directory(new_private_directory);
+if (!made) return made.error();
+auto migrated = tansr::memory_publication::FileStore::migrate(source, destination);
+if (!migrated) return migrated.error();
+// Record the version, identity, ciphertext hashes/byte counts and fact counts.
+// Explicitly select one active path, then reopen with destination.create=false.
+```
+
+The first atomic publication contains the entire imported snapshot; no empty destination store is published first. Body, committed/conflict/staging transfers, partial chunks, original owners, operation IDs/digests/deadlines, determinate and unknown receipts, and pending claims are preserved. The co-located encrypted execution journal is included. Migration does not invoke tools, change Serve bindings or recovery authorization, or complete pending operations. `MigrationReceipt` covers only this store: its format, identity, source/destination ciphertext SHA256 and byte counts, and transfer/journal counts. It excludes external sessions, budgets, other snapshots and keys. The receipt is returned only after complete publication and checks of both sides; both locks are then released.
+
+On failure, retain the original. The destination may be absent or already contain the complete snapshot. Lost confirmation after publication reports `unknown`; it does not prove that publication never happened. Keep both paths and keys. Explicitly reopen using the original configurations and reconcile the complete snapshot and original operations before selecting a path; do not delete or overwrite a target to retry. Missing/corrupt/unknown-format originals and wrong keys or identities fail closed without creating an empty store.
+
+The source remains unchanged, but it becomes an offline historical copy. Never connect both copies to Runners simultaneously. Once the target accepts new facts, switching back to the old snapshot would lose deduplication evidence. An explicit rollback to the old file is only valid before any new facts have been accepted. This tool provides no distributed ownership transfer or parallel-write coordination.
+
+The Demo provides a local-only migration mode using the existing private scope/token file facilities. It needs no `--session` and makes no network requests or registration/binding calls:
+
+```sh
+# TANSR_ARCHIVE_KEY_FILE still selects the original publication-only key.
+export TANSR_MEMORY_NEXT_KEY_FILE=/absolute/private-keys/fresh-memory-key.hex
+tansr-memory --file /absolute/private-memory/publication.bin --key-id memory-key-1 --source SOURCE_ID --generation 1 --domain DOMAIN_ID --migrate-to /absolute/private-memory-next/publication.bin --new-key-id memory-key-2
+# After checking the receipt, explicitly select the new key and target file/key-id; omit --create.
+```
+
+`--migrate-to` rejects `--create`. Retain the old file/key and switch to a single active path under host authority. Successful output confirms only local snapshot migration, not a new Serve binding or completion of business recovery.
+
+## Explicit TerminalPersistence v1 profile (PST-05)
+
+`<tansr/terminal_persistence.hpp>` exposes `terminal_persistence::FileStore` and `create_host` for the approved, separate `TansrTerminalPersistenceV1` profile. The original six actions, default factory, contract assets and `Tansr-Cpp-MemoryPublication/1` layout retain their meaning. The new `Tansr-Cpp-TerminalPersistence/1` layout is rejected by the old factory; an unavailable explicit v1 profile does not downgrade.
+
+The store handles opaque fixed 12,288-byte body blocks, canonical descriptor pages, dual-key entries/values, roots and permanent transfer results. A body is at most 4 MiB and one batch has at most 256 entries. `commitRoot` is distinct from the body digest. Reads and lookups require the current root. Body root, permanent entry ordinals/both keys, transfer result and reservations commit in one encrypted snapshot replacement. Historical query returns that transfer's original complete Root. Validated pages authorize objects; reuse is limited to the protected base and exactly matching permanent entries. No memory or receipt business decision is copied into the SDK.
+
+Configure `tp::Options` with an absolute private path, explicit `create`, trusted source identity, dedicated fresh `key_id`, current key provider and scope provider; open `tp::FileStore`, then pass it as both store and journal to `tp::create_host({store, store, current_authorizer, true})`. Supply both returned tools and journal to the existing Runner. The host passes an original-operation authorization/cancellation guard through every storage IO boundary. Direct `Store::execute(request, owner, guard)` callers have the same trusted configuration responsibility. Query-only recovery cannot authorize a new owner to put or commit. Execution claims and full receipts remain encrypted; pending/unknown never grants re-execution.
+
+Actual defaults are 32 active transfers, 8 MiB staging raw bytes, 4,096 each permanent entries/transfers/objects, 32 MiB logical retained-plus-reserved bytes, 8,192 journal entries and a 64 MiB ciphertext file. `head` reports actual lower quotas. Begin reserves declared objects/bytes and 262,144 metadata bytes under the shared accounting rules. Physical snapshot, future journal space and the per-key budget below 2^20 writes are checked separately; unrelated operations cannot consume accepted settlement reservations. Quota and IO failure preserve original facts. The private directory holds an exclusive cross-process lock.
+
+This implementation rewrites and audits the whole snapshot and scans its in-memory index. It claims neither constant IO, a million entries nor 1 GiB capacity. Old and temporary encrypted files may coexist during atomic replace; plan at least twice the configured maximum file size. This is not OS disk preallocation or a power-loss SLA. Full disk or lost sync confirmation can remain unknown. No physical GC is exposed, and permanent entries/transfers are never TTL-evicted.
+
+Explicit Demo usage:
+
+```sh
+tansr-memory --profile persistence-v1 --session EXISTING_SESSION --binding-request ORIGINAL_BINDING_REQUEST_ID --file /absolute/private-v1/persistence.bin --key-id dedicated-v1-key --source SOURCE_ID --generation 1 --domain DOMAIN_ID --create
+```
+
+Serve must explicitly install/select this same profile. Existing capability fields and routes are unchanged; omitting `--profile` retains the original publication host. Never run both profiles as current writers for the same domain. The Demo does not invent cross-owner takeover or resolve an unknown binding by changing its request body.
+
+Same-format v1 maintenance uses `FileStore::migrate(source,destination)` or `--profile persistence-v1 --migrate-to NEW_PATH --new-key-id NEW_ID`. Stop the Runner, reopen the source and create a nonexistent target in another private directory with a new, independently dedicated key ID and actual key. The first target publication already contains all objects, index, roots, pending/unknown/permanent transfer facts and journal. Existing targets and insufficient capacity are refused without deleting the source. Lost confirmation preserves both paths for explicit reconciliation. The destination is persistently read-only: its authenticated snapshot permits head/read/lookup/query after ordinary cold reopen, but rejects begin/put/commit. Because the C++ journal shares this file, it also rejects new execution claims (including read operations) and completion of existing pending claims. Existing original pending/receipts remain queryable; repeating an already stored identical receipt is a no-op. There is no activation option. This copy supports verification and evidence, not execution takeover or a writable cutover. The source and its write counter remain unchanged; without a common source fence the utility cannot authorize a second writer.
+
+Conversion from the legacy six-action business snapshot is not inferred by this storage-only utility. A trusted controller must retain legacy keys/files/history query, prove that the old writer stopped and unknown operations settled, and explicitly establish v1. Missing common cutover proof remains pending, rather than selecting a layout from file existence.
+
+Each AES-GCM encryption attempt first durably burns a counter in the adjacent `<file>.writes` sidecar, including attempts whose snapshot replacement later fails. This small sidecar contains only a random store ID, identity hash, key ID and counter authenticated with HMAC-SHA256; it contains no plaintext body, index, owner or receipt and does not itself use GCM. The store refuses a missing, invalid or lower-than-snapshot counter. Keep both files together for closed backups; an orphan counter left by a failed first publication is retained and blocks `create`. Same-format migration validates the original pair and creates a new store ID/counter only under the explicitly new dedicated key. The migration receipt hashes name the main encrypted snapshot; preserve its paired counter as well. A running instance detects counter replacement, but replay of a complete old snapshot/counter pair—or an old counter after a failed attempt with no newer snapshot—cannot be detected without an external monotonic witness. Do not restore an old pair or reset this counter to recover capacity. This does not add a whole-directory rollback guarantee.

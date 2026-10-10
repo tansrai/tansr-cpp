@@ -19,7 +19,9 @@ class ContractCheckerTests(unittest.TestCase):
     def setUp(self):
         self.temp = tempfile.TemporaryDirectory(prefix="tansr-cpp-contract-")
         self.root = Path(self.temp.name)
-        shutil.copytree(Path(__file__).resolve().parents[1] / "contract", self.root / "contract")
+        repository = Path(__file__).resolve().parents[1]
+        shutil.copytree(repository / "contract", self.root / "contract")
+        shutil.copytree(repository / "profiles", self.root / "profiles")
 
     def tearDown(self):
         self.temp.cleanup()

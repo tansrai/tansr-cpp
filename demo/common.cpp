@@ -156,7 +156,8 @@ Args::Args(int argc, char **argv) {
         if (key.rfind("--", 0) != 0 || key.size() == 2)
             fail("use --name value options");
         std::string value = "true";
-        if (key != "--help" && key != "--require-output" && key != "--run-once") {
+        if (key != "--help" && key != "--require-output" && key != "--run-once" &&
+            key != "--create") {
             if (++i >= arguments.size() || std::string_view(arguments[i]).rfind("--", 0) == 0)
                 fail("option requires a value");
             value = arguments[i];
@@ -356,8 +357,9 @@ tansr::CallOptions call_options(tansr::CancellationToken cancel,
     options.deadline_ms = deadline.value_or(tansr::unix_time_ms() + 30000);
     return options;
 }
-tansr::crypto::Aes256Key archive_key() {
-    const auto path = absolute_path(environment("TANSR_ARCHIVE_KEY_FILE"));
+tansr::crypto::Aes256Key archive_key() { return archive_key("TANSR_ARCHIVE_KEY_FILE"); }
+tansr::crypto::Aes256Key archive_key(const char *environment_name) {
+    const auto path = absolute_path(environment(environment_name));
     auto bytes =
         take(tansr::storage::read_private_file(path, 128, [] { return tansr::Result<void>{}; }));
     if (!bytes)

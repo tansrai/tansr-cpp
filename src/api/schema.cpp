@@ -148,6 +148,16 @@ bool pattern_match(std::string_view p, std::string_view s) {
         return route(s, true, true, false);
     if (p == "^(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=)?$")
         return base64(s);
+    if (p ==
+        "^(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/][AQgw]==|[A-Za-z0-9+/]{2}[AEIMQUYcgkosw048]=)?$") {
+        if (!base64(s))
+            return false;
+        if (s.empty() || s.back() != '=')
+            return true;
+        if (s[s.size() - 2] == '=')
+            return std::string_view("AQgw").find(s[s.size() - 3]) != std::string_view::npos;
+        return std::string_view("AEIMQUYcgkosw048").find(s[s.size() - 2]) != std::string_view::npos;
+    }
     if (p == "^(0|[1-9][0-9]*)$")
         return decimal(s);
     if (p == "^(0|[1-9][0-9]{0,18})$")

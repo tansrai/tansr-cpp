@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """由冻结资产生成 C++ 内嵌表；普通 CMake/安装消费者不调用此工具。"""
 import argparse
+import hashlib
 import json
 from pathlib import Path
 import sys
@@ -41,7 +42,23 @@ def generate(root, *, mode="internal"):
     outputs = {"src/api/operations.inc": "\n".join(lines) + "\n"}
     lines = ["// 由 tools/generate_api.py 从冻结 schema 原字节生成，请勿手工修改。"]
     entries = []
-    for index, path in enumerate(sorted((root / "contract").glob("*.schema.json"))):
+    profile = root / "profiles/terminal-persistence-v1"
+    lock = json.loads((profile / "LOCK.json").read_bytes())
+    if lock["definitionDigest"] != "33029a264edf81f3fda2a13fc382403d0cd7ffefa1f38088bb9366f387a13587":
+        raise ValueError("terminal persistence definition digest drift")
+    expected_assets = {
+        "terminal-persistence-v1.schema.json": "47387fb03308d00244e876a3bb429e24b81ac8d94d5f611aeda43e03b7c8b16c",
+        "terminal-persistence-v1.golden.json": "4b2c492ae590fda9447a5a53d13f3f7a935956c929cc23441a765947e3ef6503",
+    }
+    if lock["files"] != expected_assets or lock["profile"] != "terminal-persistence-v1" or lock["revision"] != "2026-10-10.v1":
+        raise ValueError("terminal persistence profile lock drift")
+    for name, digest in lock["files"].items():
+        if hashlib.sha256((profile / name).read_bytes()).hexdigest() != digest:
+            raise ValueError("terminal persistence profile asset drift: " + name)
+    outputs["include/tansr/detail/terminal_persistence_digest.inc"] = (
+        'inline constexpr const char *tool_digest = "' + lock["definitionDigest"] + '";\n')
+    schemas = sorted((root / "contract").glob("*.schema.json")) + [profile / "terminal-persistence-v1.schema.json"]
+    for index, path in enumerate(schemas):
         data = path.read_bytes().decode("utf-8")
         delimiter = "TANSR_SCHEMA"
         if ")" + delimiter + '"' in data:
@@ -83,7 +100,7 @@ def main():
             path = args.root / relative
             path.parent.mkdir(parents=True, exist_ok=True)
             path.write_bytes(content.encode("utf-8"))
-    print("generate-api: 81 operations and 10 embedded schemas " + ("verified" if args.check else "written"))
+    print("generate-api: 81 operations and 11 embedded schemas " + ("verified" if args.check else "written"))
 
 
 if __name__ == "__main__":
